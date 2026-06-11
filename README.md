@@ -82,6 +82,14 @@ LOW forever.
 When the corpus catches the engine being wrong, the engine changes - and
 signals that false-fired on real humans were rejected and stay rejected.
 
+**The false-positive bounty**: if real human writing on the surfaces the
+calibration covers - commit messages, PR bodies and diffs, written in the
+normal course of work - FLAGs on the default config, that is a bug, not a
+debate. [Open a false-positive
+issue](https://github.com/koopatroopa/slopscore/issues/new?template=false-positive.yml)
+with the text and we fix it - that is how the engine got better every time
+so far.
+
 ## Try it
 
 Scoring a commit on its way out - the message and the staged code, with each

@@ -1,0 +1,16 @@
+name: Suggest a new tell
+description: A residue pattern slopscore misses.
+labels: ["signal-proposal"]
+body:
+  - type: textarea
+    id: pattern
+    attributes:
+      label: The pattern and where you saw it
+      description: Real examples (links to public commits/PRs are ideal). Patterns ship only if they are residue (removable leftover, not writing style) and fire at ~zero rate on human text - evidence beats vibes.
+    validations:
+      required: true
+  - type: textarea
+    id: human-rate
+    attributes:
+      label: Why humans would not write this
+      description: The never-false-accuse rule means a tell that humans plausibly type stays opt-in or stays out.

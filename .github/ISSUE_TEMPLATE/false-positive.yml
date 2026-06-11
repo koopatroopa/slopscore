@@ -1,0 +1,44 @@
+name: False positive (the bounty)
+description: Real human writing flagged on the default config. This is a bug and jumps the queue.
+title: "[FP] "
+labels: ["false-positive"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The never-false-accuse rule is the project's hard constraint: real human
+        writing on the surfaces the calibration covers (commit messages, PR bodies,
+        diffs) must not FLAG on the default config. If you have a counter-example,
+        you have found a bug. Thank you. Out of scope: text QUOTING the tells
+        (mentions count like uses - see the FAQ) and text constructed to trigger
+        the scorer.
+  - type: textarea
+    id: text
+    attributes:
+      label: The text that flagged
+      description: Paste the commit message / PR body exactly as scored. If it is private, a minimal reproduction with the same characteristics works.
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: The slopscore report
+      description: Output of `slopscore --text <file>` (or the hook report). Include the signals and evidence lines.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: slopscore version
+      placeholder: slopscore --version
+    validations:
+      required: true
+  - type: checkboxes
+    id: config
+    attributes:
+      label: Configuration
+      options:
+        - label: This was the DEFAULT config (no --strict, no custom TOML, no weight overrides)
+          required: true
+        - label: A human genuinely wrote this text in the normal course of work (not pasted from an AI chat, not constructed to trigger the scorer)
+          required: true
