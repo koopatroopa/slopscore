@@ -12,9 +12,17 @@ Initial release.
 
 ### Added
 
-- Scoring engine: 12 deterministic signals for AI residue in prose and code,
+- Scoring engine: 14 deterministic signals for AI residue in prose and code,
   combined as a convergence score (0-100) with LOW/MEDIUM/HIGH bands and a
   pass/flag verdict. Heuristic-only: no LLM, no network, no telemetry.
+  Folklore signals (em-dash, emoji, curly quotes, opt-in prose patterns) are
+  additive-only and capped in aggregate: they colour the score but never
+  flag on their own under the default threshold. Defaults validated against
+  ~4,500 real commits and PR bodies (pre-2022 human + attributed-AI): zero
+  human false flags.
+- Attribution detection covers AI review-bot stamps (CodeRabbit and Sourcery
+  summary headers, aider auto-generated PR header) alongside the
+  co-author/generated-with trailer family.
 - Never-false-accuse gate: 24 real pre-2020 human PRs are a held-out test
   corpus; none may leave the LOW band on the default config.
 - CLI: score PR JSON, raw text or stdin; scan files (`--files`) and unified

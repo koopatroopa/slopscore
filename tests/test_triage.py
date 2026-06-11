@@ -53,18 +53,18 @@ def test_clean_text_scores_zero_in_low_band():
 
 def test_max_possible_is_sum_of_weight_times_cap():
     # Prose-only doc: ceiling sums the in-ceiling prose signals' weight*cap
-    # (attribution 4.0 + cliche 2.0 + openers 2.0 = 8.0). Code signals are
-    # excluded when there are no files to scan (D-09 #5); folklore signals
-    # are additive-only and never join the ceiling (D-12).
-    assert max_possible(Document(body="some prose")) == 8.0
+    # (attribution 4.0 + cliche 1.5 = 5.5; openers left the ceiling in D-17).
+    # Code signals are excluded when there are no files to scan (D-09 #5);
+    # folklore signals are additive-only and never join the ceiling (D-12).
+    assert max_possible(Document(body="some prose")) == 5.5
 
 
 def test_score_is_raw_normalised_to_0_100():
-    # two em-dashes only: raw = 0.75 * 2 = 1.5, additive over the ceiling of
-    # the evidence-backed signals (8.0), so score = 18.8.
+    # two em-dashes only: raw = 0.75 * 2 = 1.5, additive and capped at a
+    # quarter of the 5.5 evidence ceiling (1.375), so score = 25.0.
     r = triage(Document(body="alpha — beta — gamma"))
     assert r.raw == 1.5
-    assert r.score == 18.8
+    assert r.score == 25.0
     assert r.band == "LOW"
 
 
@@ -93,7 +93,7 @@ def test_verdict_threshold_is_inclusive():
 
 def test_to_dict_schema_and_only_fired_signals():
     data = triage(SLOP).to_dict()
-    assert set(data) == {"score", "raw", "band", "verdict", "threshold", "signals"}
+    assert set(data) == {"score", "raw", "counted", "band", "verdict", "threshold", "signals"}
     assert data["verdict"] == "FLAG"
     assert data["band"] in {"MEDIUM", "HIGH"}
     fired = {s["name"] for s in data["signals"]}
@@ -136,25 +136,27 @@ def test_score_is_clamped_to_0_100_against_hostile_weights():
 
 def test_certain_attribution_signal_floors_to_high():
     # Policy pin (D-13, 2026-06-11): an explicit AI attribution trailer is a
-    # CERTAIN tell, not weak convergence, so it floors the score into HIGH on
-    # its own (raw 4.0 would be 50.0/MEDIUM; the certain floor lifts it to
-    # 70.0/HIGH). Folklore signals are additive-only, so the floor holds
-    # identically with every signal enabled.
+    # CERTAIN tell, not weak convergence, so it floors the score into HIGH
+    # on its own. Over the 5.5 prose ceiling it lands at 72.7 unaided; the
+    # floor is the guarantee for bigger ceilings (mixed prose+code docs).
+    # Folklore signals are additive-only, so this holds with every signal
+    # enabled.
     doc = Document(body="As an AI language model, I cannot run the tests.")
     r = triage(doc)
     assert {h.name for h in r.hits} == {"ai_self_reference"}
     assert r.raw == 4.0
-    assert (r.score, r.band, r.verdict) == (70.0, "HIGH", "FLAG")
+    assert (r.score, r.band, r.verdict) == (72.7, "HIGH", "FLAG")
     assert triage(doc, enabled=frozenset(s.name for s in SIGNALS)).score >= 70.0
 
 
 def test_no_single_weak_signal_flags_alone():
-    # D-12 sizing rule: every weak prose signal at cap stays LOW (max 2.0
-    # over the 8.0 ceiling = 25.0). Pinned so a weight/cap/ceiling change
-    # that lets one weak signal flag a human is deliberate, never silent.
+    # D-12 sizing rule: every weak prose signal at cap stays LOW (max 1.5
+    # over the 5.5 ceiling = 27.3, additive ones capped at 25.0). Pinned so a
+    # weight/cap/ceiling change that lets one weak signal flag a human is
+    # deliberate, never silent. (Openers left the default set in D-17.)
     cliche = "It's worth noting this. In conclusion, when it comes to tests."
-    openers = "Certainly! Done now. Hope this helps!"
-    for body in (cliche, openers):
+    curly = "He said “fine”, then “fine”, then “done”, then “done”."
+    for body in (cliche, curly):
         r = triage(Document(body=body))
         assert len(r.hits) == 1, body
         assert r.band == "LOW" and r.verdict == "PASS", (body, r.score)
@@ -168,3 +170,27 @@ def test_zero_ceiling_falls_back_to_additive_signals():
     assert [h.name for h in r.hits] == ["emoji_density"]
     assert r.raw == 3.0
     assert r.score == 50.0  # 3.0 over the emoji-only ceiling 6.0
+
+
+def test_additive_signals_alone_can_never_flag():
+    # The corpus A1 failure (2026-06-11): two real pre-2022 PR bodies hit
+    # 100.0/HIGH from curly quotes + emoji alone, and em-dash-only commit
+    # bodies reached 56.2 - additive signals inflated the numerator without
+    # joining the ceiling. The aggregate additive contribution is capped at a
+    # quarter of the evidence ceiling, so folklore alone tops out at 25.0:
+    # sub-threshold, LOW, exactly the documented "no weak signal flags alone"
+    # sizing rule (D-15).
+    saturated = Document(body="Done 🌴💪🏷💥📦🎉 “ship” “it” — now — already —")
+    r = triage(saturated)
+    assert r.score == 25.0
+    assert r.verdict == "PASS"
+    assert r.band == "LOW"
+
+
+def test_additive_cap_does_not_limit_evidence_backed_convergence():
+    # In-ceiling evidence (cliche x2 = 1.5) plus capped additive (1.375)
+    # over the 5.5 ceiling = 52.3: convergence WITH evidence still flags.
+    doc = Document(body="In conclusion, it's worth noting 🌴💪🏷💥📦🎉 — yes —")
+    r = triage(doc)
+    assert r.score == 52.3
+    assert r.verdict == "FLAG"

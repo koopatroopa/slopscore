@@ -48,7 +48,7 @@ def test_code_signal_excluded_from_ceiling_when_no_files():
     # A prose-only doc's ceiling must exclude code signals (they can't fire), so
     # adding a code signal does not deflate prose scores (D-09 #5). Folklore
     # signals are additive-only and also stay out (D-12).
-    assert max_possible(Document(body="some prose here")) == 8.0
+    assert max_possible(Document(body="some prose here")) == 5.5
 
 
 def test_placeholder_in_code_only_doc_flags():

@@ -151,6 +151,7 @@ def _detect_self_reference(text: str) -> tuple[int, list[str]]:
     trailer-context lines (a Co-authored-by trailer or an <email> author), so
     naming a tool in prose never counts (review H2)."""
     matches = [m.group(0) for m in _SELF_REFERENCE_PATTERN.finditer(text)]
+    matches += [m.group(0).strip() for m in _REVIEW_BOT_STAMP.finditer(text)]
     for line in text.splitlines():
         if _TRAILER_LINE.search(line):
             matches += [m.group(0) for m in _IDENTITY_PATTERN.finditer(line)]
@@ -199,6 +200,12 @@ _SELF_REFERENCE = [
     # Tool names that are not also common human names.
     "co-authored-by: openai",
     "co-authored-by: qodo",
+    # CodeRabbit's auto-comment wrapper around its stamped summary. The full
+    # wrapper text is the anchor - the bare domain is how a human refers to
+    # the bot ("the release notes by coderabbit.ai keep appearing"), and the
+    # pre-2022 human corpus cannot witness post-2023 bot mentions (review
+    # finding on D-16).
+    "auto-generated comment: release notes by coderabbit.ai",
 ]
 
 # Bot identities / noreply emails - the highest-volume real-world markers, but
@@ -214,6 +221,16 @@ _AI_IDENTITIES = [
     "copilot-swe-agent",
 ]
 _TRAILER_LINE = re.compile(r"co-authored-by|co-committed-by|<[^>\s]+@[^>\s]+>", re.I)
+# AI review-bot stamps left in PR bodies (corpus-mined 2026-06-11: 25+ AI
+# records across 4 tools, 0/1993 humans). Anchored to the stamped HEADER form -
+# the bot name alone is prose a human writes ("I rewrote the summary by
+# CodeRabbit"), and a bare "Auto-Generated PR" header is template/Renovate
+# territory, so aider's needs its robot glyph. Same anchoring rule as D-14.
+_REVIEW_BOT_STAMP = re.compile(
+    r"^[ \t]{0,3}#{1,6}[ \t]+(?:summary by (?:coderabbit|sourcery)\b"
+    r"|\U0001f916[ \t]*auto-generated pr\b)",
+    re.IGNORECASE | re.MULTILINE,
+)
 _SELF_REFERENCE_PATTERN = _phrase_pattern(_SELF_REFERENCE)
 _IDENTITY_PATTERN = _phrase_pattern(_AI_IDENTITIES)
 
@@ -480,21 +497,28 @@ SIGNALS: list[Signal] = [
         certain=True,
     ),
     # Weak-signal caps/weights are sized so no single weak signal can reach
-    # the default threshold alone (max 2.0 over the 8.0 prose ceiling = 25.0);
-    # only attribution (4.0 -> 50.0) flags alone, by design (D-12).
+    # the default threshold alone (max 1.5 over the 5.5 prose ceiling = 27.3);
+    # only attribution (4.0 -> 72.7, floored to HIGH) flags alone, by design
+    # (D-12, resized in D-17).
     Signal(
         "ai_cliche_phrases",
         "Filler and transition phrases characteristic of LLM prose",
-        1.0,
+        0.75,
         2,
         _phrase_detector(_CLICHE),
     ),
+    # Chat-register lore, not commit residue: 0/2,567 attributed-AI records
+    # fire it and its only corpus fires were friendly humans ("happy to help
+    # out"). Kept reachable for pasted-chat scanning and the strict tier,
+    # which the attribution-selected corpus cannot witness (D-17).
     Signal(
         "sycophantic_openers",
         "Chatbot-style enthusiastic or deferential openers",
         1.0,
         2,
         _phrase_detector(_OPENERS),
+        default_enabled=False,
+        in_ceiling=False,
     ),
     Signal(
         "promotional_adjectives",

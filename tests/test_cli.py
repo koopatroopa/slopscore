@@ -61,7 +61,7 @@ def test_json_flag_emits_parseable_report(tmp_path, capsys):
     data = json.loads(out)
     assert code == 1
     assert data["verdict"] == "FLAG"
-    assert set(data) == {"score", "raw", "band", "verdict", "threshold", "signals"}
+    assert set(data) == {"score", "raw", "counted", "band", "verdict", "threshold", "signals"}
 
 
 def test_invalid_json_exits_two_with_stderr(tmp_path, capsys):
@@ -193,7 +193,7 @@ def test_json_input_evidence_carries_field_and_line(tmp_path, capsys):
         {
             "title": "Improve things",
             "body": "First line.\nIt's worth noting the gains.",
-            "commits": ["Certainly! A fine commit."],
+            "commits": ["In summary, a fine commit."],
         }
     )
     p = _write(tmp_path, "pr.json", pr)
@@ -205,7 +205,7 @@ def test_json_input_evidence_carries_field_and_line(tmp_path, capsys):
 
 
 def test_text_input_evidence_stays_unqualified(tmp_path, capsys):
-    p = _write(tmp_path, "msg.txt", "Certainly! A fine reply.")
+    p = _write(tmp_path, "msg.txt", "It's worth noting, a fine reply.")
     main(["--text", str(p), "--json"])
     data = json.loads(capsys.readouterr().out)
     evidence = [e for s in data["signals"] for e in s["evidence"]]

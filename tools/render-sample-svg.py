@@ -23,26 +23,22 @@ FONT = "ui-monospace, 'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace"
 # (text, colour, bold) segments per line; "BADGE" = header, None = blank.
 WORDMARK = " SLOPSCORE SLOP REPORT "
 
-# A real commit scan: message + staged diff. Shows the three signal classes -
-# attribution, a code stub with path:line, and a chatbot opener - and the
-# certain-attribution floor (D-13) landing it in HIGH.
+# A real commit scan: message + staged diff. Shows attribution, a code stub
+# with path:line, and the certain-attribution floor (D-13) landing it in HIGH.
 DEMO = [
     ("BADGE", " SLOPSCORE PUSH CHECK ", "[a1b2c3d] Add the request handler"),
     None,
     [("Slop score ", FG, 0), ("70.0/100", RED, 1), ("  band ", FG, 0),
      ("HIGH", RED, 1), ("  verdict ", FG, 0), ("FLAG", RED, 1),
-     ("  (raw 8.0, threshold 30.0)", FG, 0)],
+     ("  (raw 7.0, threshold 30.0)", FG, 0)],
     None,
-    [("Signals fired (3):", FG, 0)],
+    [("Signals fired (2):", FG, 0)],
     [("  [+4.0] ", CYAN, 0), ("ai_self_reference", FG, 1),
      ("  x1  Explicit AI attribution or assistant self-reference", FG, 0)],
     [("         Evidence: Generated with Claude", DIM, 0)],
     [("  [+3.0] ", CYAN, 0), ("code_placeholder_stub", FG, 1),
      ("  x1  Placeholder/stub markers left in code", FG, 0)],
     [("         Evidence: handler.py:2: # ... rest of the code unchanged", DIM, 0)],
-    [("  [+1.0] ", CYAN, 0), ("sycophantic_openers", FG, 1),
-     ("  x1  Chatbot-style enthusiastic or deferential openers", FG, 0)],
-    [("         Evidence: Certainly!", DIM, 0)],
     None,
     [("Verdict: ", FG, 0), ("FLAG", RED, 1),
      ("  (score 70.0 >= threshold 30.0)", FG, 0)],
@@ -54,12 +50,13 @@ README_SCAN = [
     None,
     [("Slop score ", FG, 0), ("100.0/100", RED, 1), ("  band ", FG, 0),
      ("HIGH", RED, 1), ("  verdict ", FG, 0), ("FLAG", RED, 1),
-     ("  (raw 14.25, threshold 30.0)", FG, 0)],
+     ("  (raw 18.25, threshold 30.0)", FG, 0)],
     None,
-    [("Signals fired (9):", FG, 0)],
-    [("  [+4.0] ", CYAN, 0), ("ai_self_reference", FG, 1), ("  x6 (capped 1)", FG, 0)],
-    [("  [+2.0] ", CYAN, 0), ("ai_cliche_phrases", FG, 1), ("  x4 (capped 2)", FG, 0)],
-    [("  [+2.0] ", CYAN, 0), ("sycophantic_openers", FG, 1), ("  x7 (capped 2)", FG, 0)],
+    [("Signals fired (10):", FG, 0)],
+    [("  [+4.5] ", CYAN, 0), ("bold_lead_in_lists", FG, 1), ("  x3", FG, 0)],
+    [("  [+4.0] ", CYAN, 0), ("ai_self_reference", FG, 1), ("  x4 (capped 1)", FG, 0)],
+    [("  [+2.0] ", CYAN, 0), ("sycophantic_openers", FG, 1), ("  x6 (capped 2)", FG, 0)],
+    [("  [+1.5] ", CYAN, 0), ("ai_cliche_phrases", FG, 1), ("  x3 (capped 2)", FG, 0)],
     [("  [+1.5] ", CYAN, 0), ("promotional_adjectives", FG, 1), ("  x3", FG, 0)],
     [("  [+1.0] ", CYAN, 0), ("negative_parallelism", FG, 1), ("  x1", FG, 0)],
     [("  [+1.0] ", CYAN, 0), ("rhetorical_qa", FG, 1), ("  x1", FG, 0)],
@@ -75,23 +72,20 @@ README_SCAN = [
 TEXT_DEMO = [
     ("BADGE", " SLOPSCORE SLOP REPORT ", None),
     None,
-    [("Slop score ", FG, 0), ("75.0/100", RED, 1), ("  band ", FG, 0),
+    [("Slop score ", FG, 0), ("86.4/100", RED, 1), ("  band ", FG, 0),
      ("HIGH", RED, 1), ("  verdict ", FG, 0), ("FLAG", RED, 1),
-     ("  (raw 6.0, threshold 30.0)", FG, 0)],
+     ("  (raw 4.75, threshold 30.0)", FG, 0)],
     None,
-    [("Signals fired (3):", FG, 0)],
+    [("Signals fired (2):", FG, 0)],
     [("  [+4.0] ", CYAN, 0), ("ai_self_reference", FG, 1),
      ("  x1  Explicit AI attribution or assistant self-reference", FG, 0)],
     [("         Evidence: Generated with Claude", DIM, 0)],
-    [("  [+1.0] ", CYAN, 0), ("ai_cliche_phrases", FG, 1),
+    [("  [+0.75] ", CYAN, 0), ("ai_cliche_phrases", FG, 1),
      ("  x1  Filler and transition phrases characteristic of LLM prose", FG, 0)],
     [("         Evidence: delve into", DIM, 0)],
-    [("  [+1.0] ", CYAN, 0), ("sycophantic_openers", FG, 1),
-     ("  x1  Chatbot-style enthusiastic or deferential openers", FG, 0)],
-    [("         Evidence: Certainly!", DIM, 0)],
     None,
     [("Verdict: ", FG, 0), ("FLAG", RED, 1),
-     ("  (score 75.0 >= threshold 30.0)", FG, 0)],
+     ("  (score 86.4 >= threshold 30.0)", FG, 0)],
 ]
 
 CW = 7.7  # monospace char advance at 13px

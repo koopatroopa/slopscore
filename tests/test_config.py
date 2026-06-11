@@ -19,12 +19,12 @@ DEFAULT_OFF = {
     "negative_parallelism",  # humans use the rhetoric too
     "rhetorical_qa",  # ditto
     "vague_authority",  # ditto
+    "sycophantic_openers",  # chat-register lore: 0 AI fires in 2,567 corpus records (D-17)
     "code_undeclared_import",  # default-off: dist-name-mismatch FP risk (D-10)
 }
 DEFAULT_ON = {
     "ai_self_reference",
     "ai_cliche_phrases",
-    "sycophantic_openers",
     "code_placeholder_stub",
     # Keyboard-character folklore: nobody types U+2014 or emoji by accident,
     # so on by default - but additive-only, out of the ceiling (D-12).

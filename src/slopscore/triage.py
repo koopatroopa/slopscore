@@ -50,6 +50,38 @@ def _applicable(signal, doc: Document) -> bool:
     return bool(doc.assembled)
 
 
+# Additive (out-of-ceiling) signals may together contribute at most this
+# fraction of the evidence ceiling to the score. On the default 8.0 prose
+# ceiling that is 2.0 raw = 25.0 points: folklore alone can never reach the
+# DEFAULT 30.0 threshold, however many additive signals converge (a config
+# lowering the threshold to 25.0 or below re-admits folklore-only flags).
+# Found the hard way - two real pre-2022 PR bodies scored 100.0 from curly
+# quotes + emoji alone (D-15, corpus run 2026-06-11).
+ADDITIVE_CAP_FRACTION = 0.25
+
+
+def _ceiling_totals(
+    doc: Document,
+    enabled: frozenset[str] | None = None,
+    weights: dict[str, float] | None = None,
+) -> tuple[float, float]:
+    """(in-ceiling total, additive total) of weight*cap over the applicable
+    enabled signals - the shared arithmetic behind the normalisation
+    denominator and the additive cap."""
+    evidence = additive = 0.0
+    for s in SIGNALS:
+        if enabled is not None and s.name not in enabled:
+            continue
+        if not _applicable(s, doc):
+            continue
+        weight = weights.get(s.name, s.weight) if weights else s.weight
+        if s.in_ceiling:
+            evidence += weight * s.cap
+        else:
+            additive += weight * s.cap
+    return round(evidence, 2), round(additive, 2)
+
+
 def max_possible(
     doc: Document,
     enabled: frozenset[str] | None = None,
@@ -65,21 +97,8 @@ def max_possible(
     zero ceiling with a live raw score; fall back to the additive signals'
     own maximum so such a config still scores meaningfully (D-12).
     """
-
-    def total_for(ceiling_only: bool) -> float:
-        total = 0.0
-        for s in SIGNALS:
-            if enabled is not None and s.name not in enabled:
-                continue
-            if not _applicable(s, doc):
-                continue
-            if s.in_ceiling != ceiling_only:
-                continue
-            weight = weights.get(s.name, s.weight) if weights else s.weight
-            total += weight * s.cap
-        return round(total, 2)
-
-    return total_for(True) or total_for(False)
+    evidence, additive = _ceiling_totals(doc, enabled, weights)
+    return evidence or additive
 
 
 # ANSI codes for the human report; LOW/MEDIUM/HIGH read as green/amber/red.
@@ -110,7 +129,8 @@ def band_for(score: float) -> str:
 @dataclass(frozen=True)
 class TriageReport:
     score: float  # 0-100, normalised
-    raw: float  # sum of capped contributions
+    raw: float  # sum of per-signal capped contributions (no aggregate cap)
+    counted: float  # score basis: raw after the additive aggregate cap (D-15)
     band: str  # LOW / MEDIUM / HIGH
     verdict: str  # FLAG / PASS
     threshold: float  # 0-100 score at/above which the verdict is FLAG
@@ -122,6 +142,7 @@ class TriageReport:
         return {
             "score": self.score,
             "raw": self.raw,
+            "counted": self.counted,
             "band": self.band,
             "verdict": self.verdict,
             "threshold": self.threshold,
@@ -179,7 +200,12 @@ class TriageReport:
             f"Slop score {paint(f'{self.score}/100', _BOLD, band_code)}"
             f"  band {paint(self.band, band_code)}"
             f"  verdict {paint(self.verdict, _BOLD, verdict_code)}"
-            f"  (raw {self.raw}, threshold {self.threshold})",
+            + (
+                f"  (raw {self.raw}, threshold {self.threshold})"
+                if self.counted == self.raw
+                else f"  (raw {self.raw}, counted {self.counted}"
+                f" after the folklore cap, threshold {self.threshold})"
+            ),
             "",
         ]
         ordered = sorted(self.hits, key=lambda h: h.contribution, reverse=True)
@@ -215,9 +241,25 @@ def triage(
 ) -> TriageReport:
     hits = evaluate(doc, enabled=enabled, weights=weights, root=root)
     raw = round(float(sum(h.contribution for h in hits)), 2)
-    ceiling = max_possible(doc, enabled=enabled, weights=weights)
-    score = round(100 * raw / ceiling, 1) if ceiling else 0.0
-    score = max(0.0, min(100.0, score))  # clamp both ends (defends against odd weights)
+    # Additive contributions are capped in aggregate (D-15): folklore
+    # corroborates evidence, it never constitutes it. The cap is skipped in
+    # the zero-ceiling fallback - a folklore-only config is an explicit
+    # opt-in to scoring on folklore alone (D-12).
+    in_ceiling = {s.name for s in SIGNALS if s.in_ceiling}
+    raw_evidence = float(sum(h.contribution for h in hits if h.name in in_ceiling))
+    raw_additive = float(sum(h.contribution for h in hits if h.name not in in_ceiling))
+    evidence_ceiling, additive_ceiling = _ceiling_totals(doc, enabled, weights)
+    ceiling = evidence_ceiling or additive_ceiling
+    if evidence_ceiling:
+        counted = raw_evidence + min(raw_additive, ADDITIVE_CAP_FRACTION * evidence_ceiling)
+    else:
+        counted = raw_additive
+    score = round(100 * counted / ceiling, 1) if ceiling else 0.0
+    counted = round(counted, 2)  # display precision; the score used the full value
+    # Clamp both ends: full evidence plus capped additive deliberately
+    # saturates past 100 before clamping, and odd weight overrides can land
+    # anywhere.
+    score = max(0.0, min(100.0, score))
     # A certain signal (an explicit AI attribution trailer) is definitive, not a
     # weak convergence signal: it floors the score into HIGH on its own (D-13).
     fired = {h.name for h in hits}
@@ -226,5 +268,6 @@ def triage(
     band = band_for(score)
     verdict = "FLAG" if score >= threshold else "PASS"
     return TriageReport(
-        score=score, raw=raw, band=band, verdict=verdict, threshold=threshold, hits=tuple(hits)
+        score=score, raw=raw, counted=counted, band=band, verdict=verdict,
+        threshold=threshold, hits=tuple(hits),
     )

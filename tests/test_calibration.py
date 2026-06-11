@@ -57,7 +57,7 @@ def test_folklore_only_stays_low_on_default():
     )
     r = _report(doc)
     assert r.band == "LOW" and r.verdict == "PASS", f"folklore-only must stay LOW, got {r.score}"
-    assert r.score == 18.8
+    assert r.score == 25.0
 
 
 def test_code_placeholder_flags():

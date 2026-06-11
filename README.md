@@ -9,7 +9,8 @@
 
 AI tools leave fingerprints: stray "Co-Authored-By: Claude" trailers,
 `# ... rest of the code unchanged` stubs, imports that do not exist,
-"Certainly!" openers — and em-dashes and 🚀 emoji nobody typed by hand.
+"Summary by CodeRabbit" stamps — and em-dashes and 🚀 emoji nobody typed
+by hand.
 slopscore scores a commit or PR 0-100 and shows the evidence for every
 finding, so you can clean it up first.
 
@@ -60,6 +61,26 @@ Two kinds of people, both on their **own** work:
 Either way the score is *information*, never an accusation: the verdict is the
 only gate, and honest human work is built to pass.
 
+## Tested against reality
+
+Every claim above is measured, not asserted. The signals are validated
+against nearly 5,000 real commits and PR bodies from public GitHub history,
+under pre-registered rules: the metric and the pass bar are written down
+before the data is scored, every rejected idea is logged, and a held-out set
+of 24 pre-2020 human PRs is never tuned against - CI enforces that it scores
+LOW forever.
+
+- **2,300+ real human commits and PR bodies (pre-2022, definitionally
+  pre-LLM): zero false flags.**
+- **1,700+ commits and PR bodies carrying real AI attribution: 99.9%
+  flagged.**
+- **785 disciplined, human-reviewed AI-assisted commits: all PASS.** It
+  measures residue, not authorship - AI-assisted work that someone actually
+  edited scores like human work.
+
+When the corpus catches the engine being wrong, the engine changes - and
+signals that false-fired on real humans were rejected and stay rejected.
+
 ## Try it
 
 Scoring a commit on its way out - the message and the staged code, with each
@@ -73,9 +94,9 @@ Or score raw text from the command line:
 echo "Certainly! Let's delve into a robust refactor. Generated with Claude Code." | slopscore --text -
 ```
 
-![slopscore scoring the line above: 75/100 HIGH](assets/text-demo.svg)
+![slopscore scoring the line above: 86/100 HIGH](assets/text-demo.svg)
 
-Drop the "Generated with Claude Code." sentence and it falls to 25.0, PASS -
+Drop the "Generated with Claude Code." sentence and it falls to 13.6, PASS -
 single weak signals are normal writing; only convergence flags.
 
 The score is a **gradient** - *how much* AI residue is in the text, not a
@@ -101,9 +122,11 @@ stays plain. `--color` and `NO_COLOR` override.
 # score a PR/issue described as JSON ({title, body, commits})
 slopscore pr.json
 # or raw text, or stdin
-echo "Certainly! Hope this helps!" | slopscore --text -
+echo "Quick fix. Generated with Claude Code." | slopscore --text -
 # scan code files too (go wide on your working tree)
 slopscore --files src/*.py --json
+# thorough tier: also score the opt-in signals (see "Who runs it")
+slopscore --strict pr.json
 ```
 
 **2. Git hooks - score every commit and push; block them when you say so.**
@@ -132,6 +155,7 @@ one setting, per repo, instant in both directions:
 git config slopscore.block true       # gate ON: refuse commits/pushes at/above the threshold
 git config slopscore.threshold 50     # move the bar (default 30)
 git config slopscore.block false      # gate OFF: back to advisory
+git config slopscore.strict true      # thorough tier: score the opt-in signals too
 ```
 
 Escape hatches even with the gate on: `git commit --no-verify` (or push) skips
@@ -176,17 +200,20 @@ code.
 Signals that are **on by default** - distinctive leftovers with a very low
 false-positive rate:
 
-- `ai_self_reference` - explicit AI attribution ("Co-Authored-By: Claude",
-  "As an AI...")
+- `ai_self_reference` - explicit AI attribution: trailers ("Co-Authored-By:
+  Claude"), assistant self-talk ("As an AI..."), and the stamps AI review
+  bots leave in PR bodies ("## Summary by CodeRabbit", aider's
+  auto-generated-PR header)
 - `ai_cliche_phrases` - chatbot filler ("delve into", "it's worth noting")
-- `sycophantic_openers` - "Certainly!", "Hope this helps!"
 - `code_placeholder_stub` - placeholder markers left in code ("// ... rest of
   code", "your implementation here"), reported with file and line.
 - `em_dash_density`, `emoji_density` and `curly_quotes` - U+2014, decorative
   emoji and word-processor quotes are not on your keyboard; in coding
   artefacts they arrive via tooling. These only ever add to a score (they are
   excluded from the normalisation ceiling), so enabling or disabling them
-  cannot dilute the signals above.
+  cannot dilute the signals above - and their combined contribution is
+  capped, so however many fire at once they can colour a score but never
+  flag on their own. Real Greenkeeper-era PR bodies taught us that one.
 
 Signals that are **opt-in**, because humans genuinely type them:
 
@@ -194,6 +221,10 @@ Signals that are **opt-in**, because humans genuinely type them:
   declared in your manifest and not a local module - possibly a package the
   model made up. It reads your `pyproject`/`requirements` and never imports or
   installs anything.
+- `sycophantic_openers` ("Certainly!", "Hope this helps!") - chat register,
+  not commit register: across 2,500+ real AI-attributed commits and PR bodies
+  it fired zero times, and its only corpus hits were friendly humans. Kept
+  for scanning pasted chat output.
 - `promotional_adjectives` ("robust", "comprehensive"), `section_scaffolding`
   (`## Overview` headers - PR templates generate these), `bold_lead_in_lists`,
   `negative_parallelism` ("not just X, but Y" and its TED-talk cousins),
@@ -224,10 +255,13 @@ git config slopscore.config slopscore.toml           # hooks, per repo
 
 ## Honest about its limits
 
-- Calibration is validated on real data: 372 human and 514 AI commits from
-  large OSS repos separate cleanly (humans below 20, AI at 70+, an empty gap
-  around the flag bar). An explicit attribution trailer is a certain tell, so
-  it scores HIGH on its own; weak signals must converge to get there.
+- Calibration is validated on the corpus above: humans top out at 25, real
+  attributed-AI sits at 70+, and the flag bar (30) lives in the empty gap
+  between them. An explicit attribution trailer is a certain tell, so it
+  scores HIGH on its own; weak signals must converge to get there.
+- The corpus has an era gap by construction: the human side is pre-2022
+  (provably pre-LLM), the AI side is 2023+. Stated, not pretended away - a
+  pass against modern human PR-template prose is the known next step.
 - The import check resolves against your manifest; import-name vs package-name
   mismatches (`yaml` vs `PyYAML`) are only partly covered by an alias map -
   hence opt-in. `requirements.txt` `-r` includes are not followed.
