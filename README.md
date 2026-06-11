@@ -115,7 +115,7 @@ yes/no. A low non-zero score is light texture, not an accusation; the
 On a terminal the report is coloured by band (green/amber/red); piped output
 stays plain. `--color` and `NO_COLOR` override.
 
-## Three ways to use it
+## Four ways to use it
 
 **1. The CLI - check your work by hand.**
 
@@ -163,7 +163,33 @@ Escape hatches even with the gate on: `git commit --no-verify` (or push) skips
 it once; `SLOPSCORE_BLOCK=0` (or `=1`) overrides the setting for one command.
 Every report's footer tells you the current state and the command to flip it.
 
-**3. CI - the same gate on every PR, two lines on either platform.**
+**3. Claude Code - make the agent clean up after itself.**
+
+```
+/plugin marketplace add koopatroopa/slopscore
+/plugin install slopscore@slopscore
+```
+
+Then restart the session once - hooks attach at session start, so the
+scoring begins from your next conversation.
+
+Every `git commit` the agent makes gets scored; a flagged report is fed
+straight back to the agent, which lays out each finding's evidence and asks
+before touching anything - you decide what gets cleaned, finding by
+finding. `/slopscore:clean` runs the full remediation loop - the agent fixes
+each piece of evidence, amends, and re-scores until the commit passes, with
+the deterministic linter as the gate on the rewrite. Advisory only - it
+never blocks, and it works on macOS, Linux and Windows alike (the hook is
+the CLI itself, no shell involved).
+
+The plugin needs the CLI (`uv tool install slopscore`) - and if it is
+missing, Claude is told at session start and will offer to install it for
+you, then offer the git hooks so your own commits are covered too. To
+remove: `/plugin uninstall slopscore`, then `uv tool uninstall slopscore`
+and (if you installed the git hooks) delete the slopscore shims from
+`.git/hooks/`.
+
+**4. CI - the same gate on every PR, two lines on either platform.**
 
 Both recipes score the PR/MR's prose (title + description) plus the diff's
 added lines, report-only until you flip the gate (exit `0` pass, `1` flag).

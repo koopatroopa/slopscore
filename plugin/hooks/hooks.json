@@ -1,0 +1,27 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "slopscore hook claude-commit",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v slopscore >/dev/null 2>&1 || echo 'The slopscore plugin needs its CLI and it is not installed, so the agent commits are not being scored. Offer to install it now: uv tool install slopscore (fallbacks: pipx install slopscore, or pip install --user slopscore). After installing, also offer to run slopscore install-hooks in this repo - the plugin only scores commits the agent makes; the git hooks score the user commits too.'",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

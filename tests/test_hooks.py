@@ -14,12 +14,13 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
-VENV_BIN = ROOT / ".venv" / "bin"
+VENV_BIN = ROOT / ".venv" / ("Scripts" if os.name == "nt" else "bin")
+_EXE = "slopscore.exe" if os.name == "nt" else "slopscore"
 # Prefer the project venv (dev: guarantees working-tree code); fall back to a
 # PATH install (CI: pip install . IS the working-tree code there).
 SLOPSCORE_BIN = (
-    VENV_BIN / "slopscore"
-    if (VENV_BIN / "slopscore").exists()
+    VENV_BIN / _EXE
+    if (VENV_BIN / _EXE).exists()
     else shutil.which("slopscore")
 )
 
@@ -47,7 +48,7 @@ def hook_env(tmp_path, **extra):
     home = tmp_path / "home"
     home.mkdir(exist_ok=True)
     env = {
-        "PATH": f"{Path(SLOPSCORE_BIN).parent}:{os.environ['PATH']}",
+        "PATH": f"{Path(SLOPSCORE_BIN).parent}{os.pathsep}{os.environ['PATH']}",
         "HOME": str(home),
         "GIT_CONFIG_NOSYSTEM": "1",
     }

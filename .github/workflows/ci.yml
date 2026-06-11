@@ -14,8 +14,14 @@ jobs:
         python-version: ["3.11", "3.12"]
         # One macOS leg proves Apple compatibility (POSIX-sh hooks, stdlib
         # engine) without the 10x private-repo minutes of a full cross-product.
+        # One Windows leg proves the engine, CLI and Claude Code plugin
+        # hook (`slopscore hook claude-commit` - no shell involved) run
+        # natively; the git-shim suite is POSIX-by-nature and excluded there
+        # (the shims run under Git for Windows' own sh in real use).
         include:
           - os: macos-latest
+            python-version: "3.12"
+          - os: windows-latest
             python-version: "3.12"
     steps:
       - uses: actions/checkout@v4
@@ -24,3 +30,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: pip install . pytest
       - run: pytest -q
+        if: runner.os != 'Windows'
+      - run: pytest -q --ignore=tests/test_hooks.py
+        if: runner.os == 'Windows'

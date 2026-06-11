@@ -1,0 +1,17 @@
+{
+  "name": "slopscore",
+  "owner": {
+    "name": "Matt Whelan"
+  },
+  "metadata": {
+    "description": "Catch the slop before it ships - AI-residue scoring for commits, pushes and PRs"
+  },
+  "plugins": [
+    {
+      "name": "slopscore",
+      "source": "./plugin",
+      "description": "Scores every git commit the agent makes for AI residue (0-100, evidence-backed) and feeds flagged reports straight back to the agent so it can amend.",
+      "version": "0.1.0"
+    }
+  ]
+}

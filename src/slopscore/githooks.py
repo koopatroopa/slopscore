@@ -12,7 +12,9 @@ from __future__ import annotations
 import os
 import re
 import stat
+import json
 import subprocess
+import time
 import sys
 
 from slopscore.config import Config, default_config, load_config
@@ -22,6 +24,12 @@ from slopscore.triage import triage
 
 _ZERO = "0" * 40
 _OBJECT_ID = re.compile(r"[0-9a-f]{7,64}")  # git sha-1/sha-256 abbreviations
+# A git invocation whose subcommand is commit: `git commit`, `git -C p commit`,
+# `git -c k=v commit`, `git --git-dir=x commit`. Mentions inside other text can
+# false-match; that is accepted - scoring the (fresh) HEAD is harmless.
+_GIT_COMMIT = re.compile(
+    r"\bgit\b(?:\s+-[cC]\s+\S+|\s+--?[A-Za-z][\w-]*(?:=\S+)?)*\s+commit\b"
+)
 
 COMMIT_MSG_SHIM = """\
 #!/bin/sh
@@ -300,6 +308,86 @@ def install_hooks() -> int:
     return 0
 
 
+def claude_commit(args: list[str]) -> int:
+    """PostToolUse hook body for the Claude Code plugin: score the freshly
+    created HEAD message and, only on a FLAG, exit 2 with the report on
+    stderr - Claude Code feeds that back to the agent so it can amend. The
+    pip entry point IS the hook (no shell, no python3-vs-python naming), so
+    one hooks.json works on macOS, Linux and native Windows. Every other
+    path exits 0: non-commit commands, stale HEAD (a failed `git commit`
+    must not get the agent told to amend work it does not own), no repo,
+    broken settings."""
+    try:
+        payload = json.loads(sys.stdin.read() or "{}")
+    except (ValueError, OSError):
+        return 0
+    if not isinstance(payload, dict):
+        return 0
+    # The hook payload's field naming differs between Claude Code surfaces
+    # ("tool_input" in the hooks docs, "inputs" in the live /hooks panel) -
+    # accept both rather than silently scoring nothing on one of them.
+    tool_args = payload.get("tool_input") or payload.get("inputs") or {}
+    command = tool_args.get("command") or "" if isinstance(tool_args, dict) else ""
+    # Match a git invocation whose SUBCOMMAND is commit - an agent working
+    # from outside the repo runs `git -C <path> commit`, which a naive
+    # "git commit" substring misses (found live, first install attempt).
+    invocation = _GIT_COMMIT.search(command)
+    if not invocation:
+        return 0
+    cwd = payload.get("cwd") or ""
+    if cwd:
+        try:
+            os.chdir(cwd)
+        except OSError:
+            return 0
+    # `git -C <path>` targets a repo other than the tool's cwd; follow it
+    # (quoted paths with spaces fall through to the recency gate, fail-open).
+    dash_c = re.search(r"\bgit\s+(?:-\S+\s+)*-C\s+([^\s'\"]+)", command)
+    if dash_c:
+        try:
+            os.chdir(dash_c.group(1))
+        except OSError:
+            return 0
+    if _git("rev-parse", "--git-dir").returncode != 0:
+        return 0
+    committed_at = _git("log", "-1", "--format=%ct").stdout.strip()
+    # Recency gate: amends refresh the committer date, so the remediation
+    # re-score path stays inside it.
+    if not committed_at.isdigit() or time.time() - int(committed_at) > 60:
+        return 0
+    message = _git("log", "-1", "--format=%B").stdout
+    if not message.strip():
+        return 0
+    settings = _Settings()
+    if settings.broken:
+        print(settings.broken, file=sys.stderr)
+        return 0
+    report, _ = _score(message, "", settings, None, "SLOPSCORE COMMIT CHECK")
+    if report.verdict == "FLAG":
+        # Compact, blank-line-free rendering: this lands in the hook-feedback
+        # panel and the agent's context, where the terminal report's badge
+        # and spacing render as a mess (found live, first install).
+        lines = [
+            "slopscore flagged HEAD's commit message - amend before it ships.",
+            f"Slop score {report.score}/100, band {report.band}, "
+            f"verdict FLAG (threshold {report.threshold}).",
+        ]
+        for hit in sorted(report.hits, key=lambda h: h.contribution, reverse=True):
+            evidence = "; ".join(hit.evidence[:3])
+            lines.append(
+                f"- {hit.name} x{hit.counted} (+{hit.contribution}): {hit.description}."
+                + (f" Evidence: {evidence}" if evidence else "")
+            )
+        lines.append(
+            "Show the user each finding with its evidence and let them decide "
+            "what, if anything, to clean up (or to run /slopscore:clean). Do "
+            "not amend without their go-ahead."
+        )
+        print("\n".join(lines), file=sys.stderr)
+        return 2
+    return 0
+
+
 def hook_main(args: list[str]) -> int:
     """Dispatch for `slopscore hook <name> ...`. Fails OPEN on any crash."""
     try:
@@ -307,8 +395,11 @@ def hook_main(args: list[str]) -> int:
             return commit_msg(args[1:])
         if args and args[0] == "pre-push":
             return pre_push(args[1:])
+        if args and args[0] == "claude-commit":
+            return claude_commit(args[1:])
         print(
-            "slopscore: unknown hook (expected commit-msg or pre-push)", file=sys.stderr
+            "slopscore: unknown hook (expected commit-msg, pre-push or claude-commit)",
+            file=sys.stderr,
         )
         return 0
     except Exception as exc:  # noqa: BLE001 - a broken linter must not block
