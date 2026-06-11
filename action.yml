@@ -1,5 +1,5 @@
 name: "slopscore"
-description: "Score AI-residue / low-craft slop in a pull request's changed files (advisory by default)."
+description: "Score AI residue in a pull request - title, body and changed lines (advisory by default)."
 branding:
   icon: "alert-triangle"
   color: "gray-dark"
@@ -37,4 +37,7 @@ runs:
         SLOP_CONFIG: ${{ inputs.config }}
         SLOP_FAIL: ${{ inputs.fail-on-flag }}
         SLOP_BASE: ${{ github.event.pull_request.base.sha }}
+        # Env assignment (not script interpolation) keeps hostile PR text inert.
+        SLOP_TITLE: ${{ github.event.pull_request.title }}
+        SLOP_BODY: ${{ github.event.pull_request.body }}
       run: bash "${{ github.action_path }}/tools/action-scan.sh"

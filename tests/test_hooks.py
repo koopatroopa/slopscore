@@ -7,6 +7,7 @@ working-tree code, not any globally installed slopscore.
 """
 
 import os
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -15,6 +16,13 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 VENV_BIN = ROOT / ".venv" / "bin"
 INSTALLER = ROOT / "tools" / "install-git-hook.sh"
+# Prefer the project venv (dev: guarantees working-tree code); fall back to a
+# PATH install (CI: pip install . IS the working-tree code there).
+SLOPSCORE_BIN = (
+    VENV_BIN / "slopscore"
+    if (VENV_BIN / "slopscore").exists()
+    else shutil.which("slopscore")
+)
 
 # A sloppy commit is sloppy in BOTH message and staged code: the input-aware
 # ceiling (D-09) includes code signals whenever a code diff is present, so a
@@ -32,7 +40,7 @@ SLOPPY_CODE = "def handler():\n    pass  # ... rest of the code unchanged\n"
 CLEAN_MSG = "Fix the widget parser"
 
 pytestmark = pytest.mark.skipif(
-    not (VENV_BIN / "slopscore").exists(), reason="project venv not built"
+    SLOPSCORE_BIN is None, reason="no slopscore binary (venv or PATH)"
 )
 
 
@@ -40,7 +48,7 @@ def hook_env(tmp_path, **extra):
     home = tmp_path / "home"
     home.mkdir(exist_ok=True)
     env = {
-        "PATH": f"{VENV_BIN}:{os.environ['PATH']}",
+        "PATH": f"{Path(SLOPSCORE_BIN).parent}:{os.environ['PATH']}",
         "HOME": str(home),
         "GIT_CONFIG_NOSYSTEM": "1",
     }
@@ -242,7 +250,7 @@ def test_sloppy_fixture_score_within_assumed_window(tmp_path):
         "+" + line + "\n" for line in SLOPPY_CODE.splitlines()
     )
     result = subprocess.run(
-        [str(VENV_BIN / "slopscore"), "--text", str(msg), "--diff", "-"],
+        [str(SLOPSCORE_BIN), "--text", str(msg), "--diff", "-"],
         input=diff,
         capture_output=True,
         text=True,

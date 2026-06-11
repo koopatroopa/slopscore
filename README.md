@@ -2,38 +2,42 @@
 
 [![tests](https://github.com/koopatroopa/slopscore/actions/workflows/ci.yml/badge.svg)](https://github.com/koopatroopa/slopscore/actions/workflows/ci.yml)
 
-Lint your own slop before you ship it.
+### **_Lint your own slop before you ship it._**
 
-"Slop" is the residue AI tools leave behind: a stray "Co-Authored-By: Claude"
-trailer in a commit message, a `# ... rest of the code unchanged` placeholder
-that was meant to be replaced, an import for a package that does not exist, a
-PR description that opens with "Certainly!" - or prose full of em-dashes and
-rocket emoji nobody typed by hand. slopscore reads your commit or PR, scores
-the residue from 0 to 100 and lists every finding with its evidence, so it can
-be fixed before anyone else reads it.
+AI tools leave fingerprints: stray "Co-Authored-By: Claude" trailers,
+`# ... rest of the code unchanged` stubs, imports that do not exist, commit
+messages full of sycophantic prose like "Certainly!" — and em-dashes and
+🚀 emoji nobody typed by hand. slopscore reads your commit or PR and
+scores the residue 0-100, with evidence for every finding, so you can clean
+it up before anyone else reads it.
 
 ## Install
 
-The whole setup is two lines - the second one, run inside a repo, is the
-point of the tool (a score on every commit and push):
-
 ```sh
 pip install slopscore
+```
+
+Then, inside each repo you want watched:
+
+```sh
 slopscore install-hooks
 ```
 
-Python 3.11 or newer. No other dependencies. Without the hooks you still have
-the CLI and the Action, but the nudge-as-you-work loop is the product.
+That second step is the point of the tool - a score on every commit and push.
+Python 3.11 or newer. No other dependencies.
 
 Plenty of tools lint AI residue in code. **Nothing else scores the prose that
 ships with it** - your commit messages and PR text, which is where the residue
 lives forever in git history, and which is exactly where AI tools leave their
-clearest fingerprints.
+clearest fingerprints. It starts as a nudge; when you trust the score, **one
+git config turns it into a hard gate** that refuses any commit or push over
+your threshold - and turns back off just as fast.
 
 The ground rules:
 
-- **It only checks your own work.** You run it on yourself; it never accuses
-  anyone else of anything.
+- **Self-facing first.** The hooks and CLI score your own work before anyone
+  else sees it. In CI it becomes a published team standard instead - still a
+  craft lint with evidence, never an authorship claim (see below).
 - **It scores craft, not authorship.** Style-based "is this AI" detection is
   unreliable and biased against people writing in a second language, so
   slopscore only flags concrete, checkable leftovers. A held-out gate of 24
@@ -90,7 +94,7 @@ echo "Certainly! Hope this helps!" | slopscore --text -
 slopscore --files src/*.py --json
 ```
 
-**2. Git hooks - the report on every commit and push.**
+**2. Git hooks - score every commit and push; block them when you say so.**
 
 ```sh
 slopscore install-hooks      # from a checkout: tools/install-git-hook.sh
@@ -109,27 +113,51 @@ repos:
 
 `commit-msg` scores your message plus the staged code; `pre-push` scores each
 outgoing commit (flagged ones reported as `[abc1234] Subject`, clean pushes
-silent). **Advisory by default - they never block.** To gate for real:
+silent). **Advisory by default - they never block until you ask.** The gate is
+one setting, per repo, instant in both directions:
 
 ```sh
-git config slopscore.block true     # refuse commits/pushes at/above the threshold
-git config slopscore.threshold 50   # optional: move the bar (default 30)
+git config slopscore.block true       # gate ON: refuse commits/pushes at/above the threshold
+git config slopscore.threshold 50     # move the bar (default 30)
+git config slopscore.block false      # gate OFF: back to advisory
 ```
 
-`--no-verify` always bypasses; `SLOPSCORE_BLOCK=1`/`=0` overrides the config
-for one command.
+Escape hatches even with the gate on: `git commit --no-verify` (or push) skips
+it once; `SLOPSCORE_BLOCK=0` (or `=1`) overrides the setting for one command.
+Every report's footer tells you the current state and the command to flip it.
 
-**3. GitHub Action - the same gate on your own PRs.**
+**3. CI - the same gate on every PR, two lines on either platform.**
+
+Both recipes score the PR/MR's own prose (title + description) plus the
+diff's added lines, report-only until you flip the gate. The exit code is
+the contract: `0` pass, `1` flag.
+
+One honest note: in CI you are no longer only scoring yourself - the check
+runs on every contributor. That is the same social contract as any linter (a
+published standard, applied uniformly, with evidence per finding), and the
+held-out human gate exists so a person who wrote every word by hand passes.
+Still: on repos with outside contributors, prefer report-only.
+
+GitHub:
 
 ```yaml
 - uses: actions/checkout@v4
   with: { fetch-depth: 0 }
-# pin to a tag
-- uses: koopatroopa/slopscore@v0
-  with:
-    threshold: "30"
-    fail-on-flag: "false"   # report-only by default
+- uses: koopatroopa/slopscore@v0   # pin to a tag
+  with: { fail-on-flag: "false" }  # "true" = gate the merge
 ```
+
+GitLab:
+
+```yaml
+include:
+  - remote: https://raw.githubusercontent.com/koopatroopa/slopscore/main/ci/slopscore.gitlab-ci.yml
+```
+
+The GitLab job ships advisory (`allow_failure: true`); redeclare the job to
+remove that or set `SLOPSCORE_THRESHOLD`. Any other CI works the same way:
+`pip install slopscore`, feed it `--text` and `--diff`, gate on the exit
+code.
 
 ## What it looks for
 

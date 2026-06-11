@@ -1,0 +1,24 @@
+# slopscore for GitLab CI - include from your .gitlab-ci.yml:
+#
+#   include:
+#     - remote: https://raw.githubusercontent.com/koopatroopa/slopscore/main/ci/slopscore.gitlab-ci.yml
+#
+# Tune by redeclaring the job: set SLOPSCORE_THRESHOLD, or remove
+# allow_failure to make it a hard merge gate.
+slopscore:
+  image: python:3.12-slim
+  stage: test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  variables:
+    GIT_DEPTH: "0"              # full history so the target...HEAD diff resolves
+    SLOPSCORE_THRESHOLD: "30"
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq git > /dev/null
+    - pip install --quiet slopscore
+  script:
+    - git fetch --quiet origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+    - printf '%s\n\n%s\n' "$CI_MERGE_REQUEST_TITLE" "$CI_MERGE_REQUEST_DESCRIPTION" > /tmp/mr.txt
+    - git diff "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME...HEAD" > /tmp/changes.diff
+    - slopscore --text /tmp/mr.txt --diff /tmp/changes.diff --threshold "$SLOPSCORE_THRESHOLD"
+  allow_failure: true           # advisory; remove this line to gate the merge
