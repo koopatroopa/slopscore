@@ -1,0 +1,21 @@
+# Dogfood: run the checked-out Action on our own PRs. Report-only forever -
+# this repo legitimately contains the slop it documents (the README wears the
+# fingerprints, the tests are full of attribution fixtures), so a gating run
+# would block honest work here.
+name: slopscore
+
+on: pull_request
+
+permissions:
+  contents: read
+
+jobs:
+  slopscore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./
+        with:
+          fail-on-flag: "false"

@@ -5,14 +5,14 @@
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-### **_Catch the AI slop before it ships._**
+### **_Catch the slop before it ships._**
 
-AI tools leave fingerprints: stray "Co-Authored-By: Claude" trailers,
-`# ... rest of the code unchanged` stubs, imports that do not exist,
-"Summary by CodeRabbit" stamps — and em-dashes and 🚀 emoji nobody typed
-by hand.
-slopscore scores a commit or PR 0-100 and shows the evidence for every
-finding, so you can clean it up first.
+AI tools leave fingerprints — em-dashes, a rocket 🚀 emoji no human would
+ever type by hand, stray `Co-Authored-By: Claude` trailers,
+`# ... rest of the code unchanged` stubs, ghost import declarations,
+`Summary by CodeRabbit` stamps. slopscore detects these AI-generated
+tells by putting a number on them — every commit, push and PR scored out
+of 100, every finding backed by evidence, all before it ships.
 
 ## Install
 
@@ -255,9 +255,9 @@ git config slopscore.config slopscore.toml           # hooks, per repo
 
 ## Honest about its limits
 
-- Calibration is validated on the corpus above: humans top out at 25, real
-  attributed-AI sits at 70+, and the flag bar (30) lives in the empty gap
-  between them. An explicit attribution trailer is a certain tell, so it
+- Calibration is validated on the corpus above: humans top out at a score
+  of 25, real attributed-AI sits at 70+, and the flag bar (30) lives in the
+  empty gap between them. An explicit attribution trailer is a certain tell, so it
   scores HIGH on its own; weak signals must converge to get there.
 - The corpus has an era gap by construction: the human side is pre-2022
   (provably pre-LLM), the AI side is 2023+. Stated, not pretended away - a
