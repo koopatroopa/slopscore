@@ -11,7 +11,7 @@ AI tools leave fingerprints — em-dashes, a rocket 🚀 emoji no human would
 ever type by hand, stray `Co-Authored-By: Claude` trailers,
 `# ... rest of the code unchanged` stubs, ghost import declarations,
 `Summary by CodeRabbit` stamps. slopscore detects these AI-generated
-tells by putting a number on them — every commit, push and PR scored out
+tells by putting a number on them: every commit, push and PR scored out
 of 100, every finding backed by evidence, all before it ships.
 
 ## Install
@@ -54,9 +54,10 @@ Two kinds of people, both on their **own** work:
   second-language writers get wrongly flagged constantly. Turn on the thorough
   tier (`--strict`) and slopscore shows your *own* writing through a crude
   detector's eyes - the em-dashes, the "delve", the scaffolding those tools
-  latch onto - with evidence, so you can see your exposure and decide whether
-  to defang it. slopscore does not believe these prove AI; it refuses that. It
-  just lets you see what the flawed tools out there react to.
+  latch onto - with evidence for every hit. slopscore is not intelligent, and
+  neither are the detectors: that is the point. It shows you your attack
+  surface before someone else's dumb tool does, so you can shrink it on your
+  own terms. It does not believe these tells prove AI; it refuses that.
 
 Either way the score is *information*, never an accusation: the verdict is the
 only gate, and honest human work is built to pass.
