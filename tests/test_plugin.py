@@ -9,6 +9,7 @@ can amend. Clean commits and non-commit commands stay silent.
 """
 
 import json
+import os
 import subprocess
 from pathlib import Path
 
@@ -173,6 +174,12 @@ def _session_start_command():
     return config["hooks"]["SessionStart"][0]["hooks"][0]["command"]
 
 
+@pytest.mark.skipif(
+    os.name == "nt",
+    reason="the SessionStart hint is bash-based and degraded-by-design on "
+    "Windows (fires under Git Bash in real use; the runner's spawned-bash "
+    "env differs)",
+)
 def test_session_start_hint_fires_only_when_cli_missing(tmp_path):
     # SessionStart stdout lands in Claude's context, so the hint is written
     # as instructions TO Claude: it offers the install (and the git hooks)
