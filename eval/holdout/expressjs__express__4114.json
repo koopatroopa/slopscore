@@ -1,0 +1,10 @@
+{
+  "repo": "expressjs/express",
+  "number": "4114",
+  "title": "docs: request for triager role for gireeshpunathil",
+  "body": "I have read and understood the project's Contributing guide.\r\nI also have read and understood the process and best practices around Express triaging.\r\n\r\nI request for a triager role for the below orgs:\r\n\r\n - jshttp\r\n - pillarjs\r\n - express",
+  "commits": [
+    "docs: request for triager role for gireeshpunathil",
+    "fixup: address review comments"
+  ]
+}

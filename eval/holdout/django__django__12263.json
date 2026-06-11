@@ -1,0 +1,9 @@
+{
+  "repo": "django/django",
+  "number": "12263",
+  "title": "Fixed #31166 -- Used \"raise from\" when raising ImproperlyConfigured exceptions in django.urls.resolvers.",
+  "body": "This will make it have a text of \"this exception is the direct result of\" instead of \"During handling of the above exception, another exception occurred\" \r\n\r\nThis is more accurate for the case of this exception.",
+  "commits": [
+    "Fixed #31166 -- Used \"raise from\" when raising ImproperlyConfigured e…\n…xceptions in django.urls.resolvers.\n\nThis change sets the __cause__ attribute to raised exceptions and makes\nsmall cleanups in error messages."
+  ]
+}

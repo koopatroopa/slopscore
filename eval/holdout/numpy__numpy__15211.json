@@ -1,0 +1,9 @@
+{
+  "repo": "numpy/numpy",
+  "number": "15211",
+  "title": "BUG: distutils: fix msvc+gfortran openblas handling corner case",
+  "body": "Ensure the openblas MSVC+gfortran temporary library names are unique\r\nfor the different openblas_* system_info classes.\r\n\r\nIf multiple different openblas libraries (e.g. both `openblas` and `openblas_ilp64`)\r\nare used in the same project, when compiling in the msvc+gfortran mode, this\r\npreviously resulted to only the last one being used.\r\n\r\nThis is mainly relevant for the above case (32+64bit openblas in same project) for which it seems to work [as seen here](https://dev.azure.com/scipy-org/SciPy/_build/results?buildId=4459&view=logs&j=da2f0622-108b-5827-a4af-f8cb335e1cfa) ([build log](https://dev.azure.com/scipy-org/df8ffb44-7275-43bc-90f9-aa5c93ef5c51/_apis/build/builds/4459/logs/41)); there's no problem with the single-library case which does not require this PR (this case is tested on the CI by gh-15107).",
+  "commits": [
+    "BUG: distutils: fix msvc+gfortran openblas handling corner case\nEnsure the openblas MSVC+gfortran temporary library names are unique\nfor the different openblas_* system_info classes.\n\nIf multiple openblas libraries (e.g. both a 32-bit and a 64-bit one) are\nused in the same project, when compiling in the msvc+gfortran mode, this\npreviously resulted to only the last one being used."
+  ]
+}

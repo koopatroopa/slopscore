@@ -1,0 +1,11 @@
+{
+  "repo": "psf/requests",
+  "number": "5276",
+  "title": "Fix the syntax highlighting in the example",
+  "body": "Previously, dots were not included, which was breaking multiline syntax highlighting in for example in interactive mode. Example:\r\n![Screenshot from 2019-11-27 16-06-00](https://user-images.githubusercontent.com/2760196/69730070-17958a00-1130-11ea-8be2-86728d993478.png)\r\n\r\nHere is how it looks after the fix:\r\n![Screenshot from 2019-11-27 16-02-36](https://user-images.githubusercontent.com/2760196/69730115-2aa85a00-1130-11ea-959d-5b54896bcb92.png)",
+  "commits": [
+    "Fix the syntax highlighting in the example",
+    "Merge branch 'master' into fix-syntax-in-repl-example",
+    "Merge branch 'master' into fix-syntax-in-repl-example"
+  ]
+}

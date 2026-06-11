@@ -1,0 +1,11 @@
+{
+  "repo": "scikit-learn/scikit-learn",
+  "number": "15997",
+  "title": "Fix restore BaseNB._check_X without abstractmethod decoration",
+  "body": "This is a follow-up on #15996 to fix the fact that this method is actually internally used by the other methods of the base class as remarked by @qinhanmin2014: https://github.com/scikit-learn/scikit-learn/pull/15996#issuecomment-569942569",
+  "commits": [
+    "Fix restore BaseNB._check_X without abstractmethod decoration",
+    "typo\n[ci skip]",
+    "Update v0.22.rst"
+  ]
+}

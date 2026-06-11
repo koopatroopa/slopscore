@@ -1,0 +1,9 @@
+{
+  "repo": "expressjs/express",
+  "number": "4144",
+  "title": "docs: added CHARTER.md",
+  "body": "As a member for the OpenJS foundation, we are required to have a well defined charter for the project.  I tried to pull it together based on the [template they provide](https://raw.githubusercontent.com/openjs-foundation/cross-project-council/master/PROJECT_CHARTER_TEMPLATE.md) and our existing docs. \r\n\r\nThis is part of the onboarding process: https://github.com/openjs-foundation/project-onboarding/issues/15",
+  "commits": [
+    "docs: add Charter\ncloses #4144"
+  ]
+}

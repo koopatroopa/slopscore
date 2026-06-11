@@ -1,0 +1,24 @@
+{
+  "repo": "pandas-dev/pandas",
+  "number": "30588",
+  "title": "BUG: validate Index data is 1D + deprecate multi-dim indexing",
+  "body": "- [x] closes #13601\r\n- [x] closes #27125\r\n- [x] tests added / passed\r\n- [x] passes `black pandas`\r\n- [x] passes `git diff upstream/master -u -- \"*.py\" | flake8 --diff`\r\n- [ ] whatsnew entry\r\n\r\nThis changes the behavior of `idx[:, None]` to return an ndarray instead of an invalid Index, needed to keep matplotlib tests working.\r\n\r\nSee also #20285 which this does not entirely close.  That becomes pretty easy to address though once a decision is made on whether to treat `[[0, 1], [2, 3]]` like `[(0, 1), (2, 3)]` (the latter becomes a MultiIndex, the former currently becomes an invalid Index)",
+  "commits": [
+    "BUG: validate Index data is 1D",
+    "Merge branch 'master' of https://github.com/pandas-dev/pandas into bu…\n…g-idx-ndim",
+    "Use single-entry MultiIndex",
+    "whatsnew",
+    "Merge branch 'master' of https://github.com/pandas-dev/pandas into bu…\n…g-idx-ndim",
+    "deprecate 2d returns",
+    "Update doc/source/whatsnew/v1.0.0.rst\nCo-Authored-By: Joris Van den Bossche <jorisvandenbossche@gmail.com>",
+    "Merge branch 'master' of https://github.com/pandas-dev/pandas into bu…\n…g-idx-ndim",
+    "Merge branch 'master' of https://github.com/pandas-dev/pandas into bu…\n…g-idx-ndim",
+    "update tests, Categorical, IntervalIndex",
+    "Merge branch 'master' of https://github.com/pandas-dev/pandas into bu…\n…g-idx-ndim",
+    "update categorical test",
+    "Merge branch 'master' of https://github.com/pandas-dev/pandas into bu…\n…g-idx-ndim",
+    "catch warnings",
+    "Disallow multi-dim indexing for IntervalArray",
+    "ignore stacklevel"
+  ]
+}

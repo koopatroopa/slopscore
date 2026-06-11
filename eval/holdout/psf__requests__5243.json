@@ -1,0 +1,9 @@
+{
+  "repo": "psf/requests",
+  "number": "5243",
+  "title": "Test on Python 3.8 final",
+  "body": "The Trove classifier is already added:\r\n \r\nhttps://github.com/psf/requests/blob/fab1fd10d0b115e635b9ef1364f8444089725000/setup.py#L98",
+  "commits": [
+    "Test on Python 3.8 final"
+  ]
+}

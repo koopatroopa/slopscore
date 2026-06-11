@@ -1,0 +1,9 @@
+{
+  "repo": "numpy/numpy",
+  "number": "15205",
+  "title": "DOC: Improvements to Quickstart Tutorial.",
+  "body": "* Modified reference to array creation with a list to the\r\n   more general term 'sequence'. Also removed the 'numeric'\r\n   distinction.\r\n\r\n * Updated reference to arange to reflect that as of Python\r\n   3, the python built-in `range` does not return a list.\r\n\r\n * Fixed 'see also' references to `invert` and `r_` which were\r\n   not linked properly.\r\n\r\n * Replaced referenced to `ma.row_stack` with the more\r\n   general `row_stack`. Added additional detail about\r\n   the aliasing of `vstack`.\r\n\r\n * Updated array stacking example to include proper rST\r\n   python syntax.\r\n\r\n<!-- Please be sure you are following the instructions in the dev guidelines\r\nhttp://www.numpy.org/devdocs/dev/development_workflow.html\r\n-->\r\n\r\n<!-- We'd appreciate it if your commit message is properly formatted\r\nhttp://www.numpy.org/devdocs/dev/development_workflow.html#writing-the-commit-message\r\n-->",
+  "commits": [
+    "DOC: Improvements to Quickstart Tutorial.\n* Modified reference to array creation with a list to the\n   more general term 'sequence'. Also removed the 'numeric'\n   distinction.\n\n * Updated reference to arange to reflect that as of Python\n   3, the python built-in range does not return a list.\n\n * Fixed 'see also' references to invert and r_ which were\n   not linked properly.\n\n * Replaced referenced to ma.row_stack with the more\n   general row_stack. Added additional detail about\n   the aliasing of vstack.\n\n * Updated array stacking example to include proper rST\n   python syntax."
+  ]
+}

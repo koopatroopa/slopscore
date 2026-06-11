@@ -1,0 +1,13 @@
+{
+  "repo": "pandas-dev/pandas",
+  "number": "30585",
+  "title": "BUG: Disable parallel cythonize on Windows (GH 30214)",
+  "body": "- [x ] closes #30356\r\n- [ ] tests added / passed\r\n  - N/A\r\n- [ ] passes `black pandas`\r\n  - Didn't run - changes too many files\r\n- [x] passes `git diff upstream/master -u -- \"*.py\" | flake8 --diff`\r\n- [x] whatsnew entry\r\n\r\nAdded test in `setup.py` to check if nthreads is positive and on Windows.",
+  "commits": [
+    "BUG: Disable parallel cythonize on Windows (GH 30214)",
+    "add blank line to whatsnew",
+    "fix formatting in whatsnew",
+    "Add GH comment to code in setup.py",
+    "put in -j 4 in Windows CI.  Don't document change in whatsnew"
+  ]
+}

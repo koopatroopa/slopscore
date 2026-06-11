@@ -1,0 +1,10 @@
+{
+  "repo": "pallets/flask",
+  "number": "3456",
+  "title": "Fix a bug that the static endpoint will unexpectedly catch all",
+  "body": "Fixes #3452\r\n\r\nStrip the ending slash when passed to `os.path.basename`, so that the last part can be used for static url path correctly.\r\n\r\n<!--\r\nCommit checklist:\r\n\r\n* add tests that fail without the patch\r\n* ensure all tests pass with ``pytest``\r\n* add documentation to the relevant docstrings or pages\r\n* add ``versionadded`` or ``versionchanged`` directives to relevant docstrings\r\n* add a changelog entry if this patch changes code\r\n\r\nTests, coverage, and docs will be run automatically when you submit the pull\r\nrequest, but running them yourself can save time.\r\n-->",
+  "commits": [
+    "strip the ending slash for static_url_path",
+    "Handle different sep across os"
+  ]
+}

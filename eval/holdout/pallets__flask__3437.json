@@ -1,0 +1,9 @@
+{
+  "repo": "pallets/flask",
+  "number": "3437",
+  "title": "Updated Issue Template",
+  "body": "* Mentioned Pallets Discord as a way of getting help\r\n* Updated it to use the new format, to fix the warning that shows right now",
+  "commits": [
+    "mention discord in issue template"
+  ]
+}

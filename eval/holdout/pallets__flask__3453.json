@@ -1,0 +1,9 @@
+{
+  "repo": "pallets/flask",
+  "number": "3453",
+  "title": "fix docstring and remove redundant parentheses",
+  "body": "Hi!\r\n\r\nThis fixes a docstring and remove redundant parentheses, if you want me to submit as separated PR or you need me to do something else just let me know.",
+  "commits": [
+    "fix docstring and remove redundant parentheses"
+  ]
+}

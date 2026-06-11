@@ -1,0 +1,9 @@
+{
+  "repo": "django/django",
+  "number": "12261",
+  "title": "Fixed #31126 -- Doc'd STATICFILES_DIRS namespacing in static files how-to.",
+  "body": "Ticket: https://code.djangoproject.com/ticket/31126\r\n\r\nI've added information regarding prefixes (as part of namespacing) in the `Static file namespacing` admonition.",
+  "commits": [
+    "Fixed #31126 -- Doc'd STATICFILES_DIRS namespacing in static files ho…\n…w-to."
+  ]
+}

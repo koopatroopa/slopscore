@@ -1,0 +1,9 @@
+{
+  "repo": "psf/requests",
+  "number": "5250",
+  "title": "Fix link to requests-threads in community/recommended doc",
+  "body": "The link for `Requests-Threads` was missing a trailing `_` causing it to be italicized instead of being a proper link.",
+  "commits": [
+    "Fix link to requests-threads on community/recommended"
+  ]
+}

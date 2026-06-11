@@ -1,0 +1,9 @@
+{
+  "repo": "numpy/numpy",
+  "number": "15212",
+  "title": "BUG: lib: Fix handling of integer arrays by gradient.",
+  "body": "In numpy.gradient, convert integer array inputs to float64 to avoid\r\nunwanted modular arithmetic.\r\n\r\nCloses gh-15207.",
+  "commits": [
+    "BUG: lib: Fix handling of integer arrays by gradient.\nIn numpy.gradient, convert integer array inputs to float64 to avoid\nunwanted modular arithmetic.\n\nCloses gh-15207."
+  ]
+}

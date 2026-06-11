@@ -1,0 +1,10 @@
+{
+  "repo": "pandas-dev/pandas",
+  "number": "30586",
+  "title": "REF: separate casting out of Index.__new__",
+  "body": "first of two PRs to separate array casting/inference out of `Index.__new__`.  Once both are in place, we'll be able to do all inference/casting up-front and simplify the constructor quite a bit.  We'll also be able to look into sharing code between Index/Series/array, and address a handful of outstanding issues with the Index constructor.",
+  "commits": [
+    "REF: refactor array casting out of Index.__new__",
+    "docstrings"
+  ]
+}

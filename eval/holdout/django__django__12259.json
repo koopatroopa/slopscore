@@ -1,0 +1,10 @@
+{
+  "repo": "django/django",
+  "number": "12259",
+  "title": "Fixed #31097 -- Fixed crash of ArrayAgg and StringAgg with filter when used in Subquery.",
+  "body": "Tackling https://code.djangoproject.com/ticket/31097\r\n\r\nFor the review, commit-by-commit and the commit messages should explain what I did :)\r\n\r\nQuestions:\r\n* do I need to add information to potential docs/release notes for backports on LTS versions?\r\n* do I need to open PRs to these branches for the backports?\r\n\r\nI should have sent you the CLA by email by now :)",
+  "commits": [
+    "Refs #31097 -- Added tests for filter in ArrayAgg and StringAgg.",
+    "Fixed #31097 -- Fixed crash of ArrayAgg and StringAgg with filter whe…\n…n used in Subquery."
+  ]
+}

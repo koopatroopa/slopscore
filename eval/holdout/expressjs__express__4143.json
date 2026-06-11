@@ -1,0 +1,9 @@
+{
+  "repo": "expressjs/express",
+  "number": "4143",
+  "title": "docs: added CODE_OF_CONDUCT.md",
+  "body": "As a member of the Open JS Foundation, we need to add the code of conduct to all project repos.  To get started I wanted to at least get it on the main repo, and then if we are good with this we can automate adding it to the rest.\r\n\r\nThis is part of the project onboarding: https://github.com/openjs-foundation/project-onboarding/issues/15",
+  "commits": [
+    "docs: add Code of Conduct\ncloses #4143"
+  ]
+}
