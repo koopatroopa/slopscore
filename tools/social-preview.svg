@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1117"/>
+      <stop offset="1" stop-color="#10141b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="640" fill="url(#bg)"/>
+
+  <!-- badge wordmark with drop shadow, mirroring the terminal report -->
+  <rect x="84" y="78" width="318" height="58" fill="#5c0f0f"/>
+  <rect x="76" y="70" width="318" height="58" fill="#b62324"/>
+  <text x="235" y="109" font-family="DejaVu Sans Mono" font-size="30" font-weight="bold" fill="#ffffff" text-anchor="middle">SLOPSCORE</text>
+
+  <!-- strapline -->
+  <text x="76" y="208" font-family="DejaVu Sans Mono" font-size="52" font-weight="bold" fill="#e6edf3">Catch the slop</text>
+  <text x="76" y="272" font-family="DejaVu Sans Mono" font-size="52" font-weight="bold" fill="#e6edf3">before it ships.</text>
+
+  <!-- terminal panel -->
+  <rect x="76" y="318" width="1128" height="216" rx="12" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+  <circle cx="106" cy="346" r="7" fill="#f85149"/>
+  <circle cx="130" cy="346" r="7" fill="#d29922"/>
+  <circle cx="154" cy="346" r="7" fill="#3fb950"/>
+
+  <text x="104" y="398" font-family="DejaVu Sans Mono" font-size="23" fill="#c9d1d9">Slop score <tspan font-weight="bold" fill="#f85149">72.7/100</tspan>  band <tspan fill="#f85149">HIGH</tspan>  verdict <tspan font-weight="bold" fill="#f85149">FLAG</tspan></text>
+  <text x="104" y="438" font-family="DejaVu Sans Mono" font-size="23" fill="#c9d1d9"><tspan fill="#39c5cf">[+4.0]</tspan> ai_self_reference  <tspan fill="#6e7681">Evidence: Generated with Claude</tspan></text>
+  <text x="104" y="478" font-family="DejaVu Sans Mono" font-size="23" fill="#c9d1d9"><tspan fill="#39c5cf">[+3.0]</tspan> code_placeholder_stub  <tspan fill="#6e7681">handler.py:2: # ... rest of the code</tspan></text>
+  <text x="104" y="514" font-family="DejaVu Sans Mono" font-size="21" fill="#6e7681">heuristic-only · no LLM, no network · zero false flags on 5,000 real commits</text>
+
+  <!-- footer -->
+  <text x="76" y="592" font-family="DejaVu Sans Mono" font-size="24" fill="#3fb950">pip install slopscore</text>
+  <text x="1204" y="592" font-family="DejaVu Sans Mono" font-size="22" fill="#6e7681" text-anchor="end">CLI · git hooks · GitHub Action · Claude Code plugin</text>
+</svg>
