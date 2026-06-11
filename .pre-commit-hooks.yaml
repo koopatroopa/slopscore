@@ -1,0 +1,25 @@
+# pre-commit framework integration (https://pre-commit.com).
+# Usage in a consumer repo's .pre-commit-config.yaml:
+#
+#   repos:
+#     - repo: https://github.com/koopatroopa/slopscore
+#       rev: v0.1.0
+#       hooks:
+#         - id: slopscore-commit-msg
+#         - id: slopscore-pre-push
+#
+# Then: pre-commit install --hook-type commit-msg --hook-type pre-push
+- id: slopscore-commit-msg
+  name: slopscore commit check
+  description: Score the commit message + staged diff for AI residue (advisory unless slopscore.block is set).
+  entry: slopscore hook commit-msg
+  language: python
+  stages: [commit-msg]
+- id: slopscore-pre-push
+  name: slopscore push check
+  description: Score each outgoing commit for AI residue (advisory unless slopscore.block is set).
+  entry: slopscore hook pre-push
+  language: python
+  stages: [pre-push]
+  pass_filenames: false
+  always_run: true

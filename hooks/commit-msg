@@ -1,0 +1,14 @@
+#!/bin/sh
+# slopscore commit-msg shim - the logic lives in `slopscore hook commit-msg`.
+# Install: `slopscore install-hooks` (or tools/install-git-hook.sh from a
+# checkout). Bypass any time with `git commit --no-verify`.
+if command -v slopscore >/dev/null 2>&1; then
+  exec slopscore hook commit-msg "$1"
+fi
+# -P (isolated sys.path, Python 3.11+) is load-bearing: without it this would
+# import a slopscore/ package from the repo being scored - code execution on
+# commit in a hostile clone. On 3.10 the probe fails and the hook skips.
+if command -v python3 >/dev/null 2>&1 && python3 -P -c "import slopscore" 2>/dev/null; then
+  exec python3 -P -m slopscore.cli hook commit-msg "$1"
+fi
+exit 0  # slopscore not available - skip rather than block a commit
