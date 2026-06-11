@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](https://github.com/koopatroopa/slopscore/blob/main/LICENSE)
 
-### **_Catch the slop before it ships._**
+![slopscore - catch the slop before it ships](https://raw.githubusercontent.com/koopatroopa/slopscore/main/assets/social-preview.png)
 
 AI tools leave fingerprints — em-dashes, a rocket 🚀 emoji no human would
 ever type by hand, stray `Co-Authored-By: Claude` trailers,
