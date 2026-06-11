@@ -1,7 +1,7 @@
 # slopscore
 
 [![tests](https://github.com/koopatroopa/slopscore/actions/workflows/ci.yml/badge.svg)](https://github.com/koopatroopa/slopscore/actions/workflows/ci.yml)
-[![PyPI](https://img.shields.io/pypi/v/slopscore)](https://pypi.org/project/slopscore/)
+[![PyPI](https://img.shields.io/pypi/v/slopscore?cacheSeconds=3600)](https://pypi.org/project/slopscore/)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](https://github.com/koopatroopa/slopscore/blob/main/LICENSE)
 
