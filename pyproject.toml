@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "slopscore"
 version = "0.1.0"
-description = "Heuristic slop linter for your own commits and PRs - scores AI residue and low-craft slop 0-100, never accuses"
+description = "Heuristic linter that scores AI residue in commits and PRs 0-100 with evidence - flags craft, not authorship"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.11"

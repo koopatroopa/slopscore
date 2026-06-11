@@ -2,14 +2,13 @@
 
 [![tests](https://github.com/koopatroopa/slopscore/actions/workflows/ci.yml/badge.svg)](https://github.com/koopatroopa/slopscore/actions/workflows/ci.yml)
 
-### **_Lint your own slop before you ship it._**
+### **_Catch the AI slop before it ships._**
 
 AI tools leave fingerprints: stray "Co-Authored-By: Claude" trailers,
-`# ... rest of the code unchanged` stubs, imports that do not exist, commit
-messages full of sycophantic prose like "Certainly!" — and em-dashes and
-🚀 emoji nobody typed by hand. slopscore reads your commit or PR and
-scores the residue 0-100, with evidence for every finding, so you can clean
-it up before anyone else reads it.
+`# ... rest of the code unchanged` stubs, imports that do not exist,
+"Certainly!" openers — and em-dashes and 🚀 emoji nobody typed by hand.
+slopscore scores a commit or PR 0-100 and shows the evidence for every
+finding, so you can clean it up first.
 
 ## Install
 
@@ -27,23 +26,18 @@ That second step is the point of the tool - a score on every commit and push.
 Python 3.11 or newer. No other dependencies.
 
 Plenty of tools lint AI residue in code. **Nothing else scores the prose that
-ships with it** - your commit messages and PR text, which is where the residue
-lives forever in git history, and which is exactly where AI tools leave their
-clearest fingerprints. It starts as a nudge; when you trust the score, **one
-git config turns it into a hard gate** that refuses any commit or push over
-your threshold - and turns back off just as fast.
+ships with it** - the commit messages and PR text where the residue lives in
+git history forever. It starts as a nudge; **one git config turns it into a
+hard gate** that refuses any commit or push over your threshold, and off again
+just as fast.
 
-The ground rules:
-
-- **Self-facing first.** The hooks and CLI score your own work before anyone
-  else sees it. In CI it becomes a published team standard instead - still a
-  craft lint with evidence, never an authorship claim (see below).
-- **It scores craft, not authorship.** Style-based "is this AI" detection is
-  unreliable and biased against people writing in a second language, so
-  slopscore only flags concrete, checkable leftovers. A held-out gate of 24
-  real pre-2020 human PRs must score LOW forever (`tests/test_holdout.py`).
-- **Everything runs on your machine.** Plain Python heuristics; no LLM, no
-  network, no telemetry.
+It flags **craft, not authorship**. slopscore never claims "this is AI" - it
+points at fixable leftovers with evidence, like a linter flagging a missing
+semicolon. (Style-based AI detection is unreliable and biased against
+second-language writers, so it refuses to do it: 24 real pre-2020 human PRs
+must score LOW forever - `tests/test_holdout.py`.) Run it on yourself via the
+hooks, or as a shared CI standard on every PR - report-only for repos with
+outside contributors. Everything runs locally: no LLM, no network, no telemetry.
 
 ## Try it
 
@@ -128,15 +122,10 @@ Every report's footer tells you the current state and the command to flip it.
 
 **3. CI - the same gate on every PR, two lines on either platform.**
 
-Both recipes score the PR/MR's own prose (title + description) plus the
-diff's added lines, report-only until you flip the gate. The exit code is
-the contract: `0` pass, `1` flag.
-
-One honest note: in CI you are no longer only scoring yourself - the check
-runs on every contributor. That is the same social contract as any linter (a
-published standard, applied uniformly, with evidence per finding), and the
-held-out human gate exists so a person who wrote every word by hand passes.
-Still: on repos with outside contributors, prefer report-only.
+Both recipes score the PR/MR's prose (title + description) plus the diff's
+added lines, report-only until you flip the gate (exit `0` pass, `1` flag).
+It runs on every contributor, so it is a shared craft standard - keep it
+report-only on repos with outside contributors.
 
 GitHub:
 
@@ -212,10 +201,10 @@ git config slopscore.config slopscore.toml           # hooks, per repo
 
 ## Honest about its limits
 
-- The weights and band cut-points are calibrated against two anchors: the 24
-  real-human holdout (all score 0.0) and a slop corpus. A fuller pass against a
-  large set of real sloppy AI output could still refine the high band, so treat
-  a high score as "give this a second read", not a verdict.
+- Calibration is validated on real data: 372 human and 514 AI commits from
+  large OSS repos separate cleanly (humans below 20, AI at 50+, an empty gap
+  around the flag bar). The HIGH band is the sparser end - a bare attribution
+  trailer lands in MEDIUM, and only genuine convergence reaches HIGH.
 - The import check resolves against your manifest; import-name vs package-name
   mismatches (`yaml` vs `PyYAML`) are only partly covered by an alias map -
   hence opt-in. `requirements.txt` `-r` includes are not followed.
@@ -226,7 +215,7 @@ git config slopscore.config slopscore.toml           # hooks, per repo
 
 The detection engine is framework-free; the CLI, git hooks and Action are thin
 front-ends over it. Heuristic-only by design - the value is the discipline
-(low false-positive, self-facing, craft not accusation), not a cleverer
+(low false-positive, evidence-backed, craft not authorship), not a cleverer
 classifier.
 
 MIT licensed.

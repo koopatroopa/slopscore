@@ -8,7 +8,7 @@ doubles as a CI / git-hook gate:
     1  at or above threshold (FLAG)
     2  usage or input error
 
-Self-facing by design: it reports on your OWN text, it never accuses anyone.
+Flags craft, not authorship: it reports fixable residue with evidence, never a claim about who or what wrote the text.
 """
 
 from __future__ import annotations
@@ -77,9 +77,9 @@ def _use_color(mode: str) -> bool:
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="slopscore",
-        description="Score your own commit, PR or text for AI residue and\n"
-        "low-craft slop (0-100, itemised findings). Self-facing: it checks\n"
-        "your work, never someone else's.",
+        description="Score a commit, PR or text for AI residue and low-craft\n"
+        "slop (0-100, itemised findings). Flags craft, not authorship - never\n"
+        "a claim about who or what wrote it.",
         epilog=(
             "examples:\n"
             "  slopscore pr.json                     score a PR described as JSON\n"

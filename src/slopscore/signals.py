@@ -334,8 +334,17 @@ def _detect_em_dash(text: str) -> tuple[int, list[str]]:
     return text.count("—"), []
 
 
+# A grapheme glyph may be several codepoints: a base emoji plus skin-tone
+# modifiers (U+1F3FB-U+1F3FF) joined by zero-width joiners (U+200D). Collapse
+# those into the base so a single "person coding" glyph counts once, not thrice
+# (a real human commit, gardener d0368438, false-flagged on exactly this).
+_EMOJI_SEQUENCE = re.compile(
+    _EMOJI.pattern + "(?:[\U0001f3fb-\U0001f3ff]|\u200d" + _EMOJI.pattern + ")*"
+)
+
+
 def _detect_emoji(text: str) -> tuple[int, list[str]]:
-    matches = _EMOJI.findall(text)
+    matches = [m.group(0) for m in _EMOJI_SEQUENCE.finditer(text)]
     return len(matches), _dedup(matches)[:_EVIDENCE_LIMIT]
 
 

@@ -163,3 +163,16 @@ def test_vague_authority_phrases_fire():
     n, ev = detector("Studies show this works. Experts agree it is fine.")
     assert n == 2
     assert "studies show" in [e.lower() for e in ev]
+
+
+def test_emoji_zwj_sequence_counts_as_one():
+    from slopscore.signals import _detect_emoji
+
+    # A person-coding emoji is one glyph: man + skin-tone + ZWJ + laptop.
+    # Counting the components separately falsely inflated a real human commit
+    # (gardener d0368438) to a FLAG. One glyph = one occurrence.
+    assert _detect_emoji("Local Provider Extension 👨🏼‍💻 (#5115)")[0] == 1
+    # Two distinct emoji still count as two.
+    assert _detect_emoji("ship it 🚀🎉")[0] == 2
+    # A skin-toned single emoji is still one.
+    assert _detect_emoji("thumbs 👍🏽")[0] == 1
