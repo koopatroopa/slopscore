@@ -1,6 +1,6 @@
 {
   "name": "slopscore",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Catch the slop before it ships, from inside Claude Code: every git commit the agent makes is scored for AI residue (attribution trailers, placeholder stubs, folklore texture), flagged reports are fed back to the agent, and /slopscore:clean runs the remediation loop - the agent fixes the evidence, amends, and re-scores until it passes. The deterministic linter is the gate; the agent does the judgement. Advisory only, never blocks. Works on macOS, Linux and native Windows - the hook is the CLI itself, no shell required. Requires the slopscore CLI (uv tool install slopscore).",
   "author": {
     "name": "Matt Whelan"

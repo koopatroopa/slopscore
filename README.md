@@ -98,7 +98,8 @@ echo "Certainly! Let's delve into a robust refactor. Generated with Claude Code.
 ![slopscore scoring the line above: 86/100 HIGH](https://raw.githubusercontent.com/koopatroopa/slopscore/v0.1.0/assets/text-demo.svg)
 
 Drop the "Generated with Claude Code." sentence and it falls to 13.6, PASS -
-single weak signals are normal writing; only convergence flags.
+single weak signals are normal writing; only convergence flags. (No install
+needed to play: swap `slopscore` for `uvx slopscore` in any of these.)
 
 The score is a **gradient** - *how much* AI residue is in the text, not a
 yes/no. A low non-zero score is light texture, not an accusation; the

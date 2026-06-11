@@ -6,13 +6,18 @@ All notable changes to slopscore are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-06-11
+
 ### Added
 
 - Claude Code plugin (`/plugin marketplace add koopatroopa/slopscore`): a
-  post-commit hook scores every commit the agent makes and feeds flagged
-  reports back to the agent, and `/slopscore:clean` runs the remediation
-  loop - fix the evidence, amend, re-score until it passes. Advisory
-  only; cross-platform (the hook is the CLI entry point, no shell).
+  post-commit hook scores every commit the agent makes and lays the
+  evidence before the user - you decide what gets cleaned - and
+  `/slopscore:clean` runs the consented remediation loop: fix the
+  evidence, amend, re-score until it passes. Advisory only;
+  cross-platform (the hook is the CLI entry point, no shell involved).
+- `slopscore hook claude-commit`: the plugin's hook as a CLI subcommand,
+  honouring the repo's `slopscore.*` git config like the git hooks do.
 
 ## [0.1.0] - 2026-06-11
 
@@ -48,4 +53,5 @@ Initial release.
   code and `field:line` locations for JSON input, and a footer stating the
   current blocking state. Colour respects `NO_COLOR` and `--color`.
 
+[0.1.1]: https://github.com/koopatroopa/slopscore/releases/tag/v0.1.1
 [0.1.0]: https://github.com/koopatroopa/slopscore/releases/tag/v0.1.0
