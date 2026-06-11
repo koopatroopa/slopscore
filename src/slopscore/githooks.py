@@ -10,6 +10,7 @@ never block a commit.
 from __future__ import annotations
 
 import os
+import re
 import stat
 import subprocess
 import sys
@@ -20,11 +21,12 @@ from slopscore.signals import Document
 from slopscore.triage import triage
 
 _ZERO = "0" * 40
+_OBJECT_ID = re.compile(r"[0-9a-f]{7,64}")  # git sha-1/sha-256 abbreviations
 
 COMMIT_MSG_SHIM = """\
 #!/bin/sh
 # slopscore commit-msg shim - the logic lives in `slopscore hook commit-msg`.
-# Install: `slopscore install-hooks` (or tools/install-git-hook.sh from a
+# Install: `slopscore install-hooks` (writes this shim into .git/hooks; from a
 # checkout). Bypass any time with `git commit --no-verify`.
 if command -v slopscore >/dev/null 2>&1; then
   exec slopscore hook commit-msg "$1"
@@ -41,7 +43,7 @@ exit 0  # slopscore not available - skip rather than block a commit
 PRE_PUSH_SHIM = """\
 #!/bin/sh
 # slopscore pre-push shim - the logic lives in `slopscore hook pre-push`.
-# Install: `slopscore install-hooks` (or tools/install-git-hook.sh from a
+# Install: `slopscore install-hooks` (writes this shim into .git/hooks; from a
 # checkout). Bypass any time with `git push --no-verify`.
 if command -v slopscore >/dev/null 2>&1; then
   exec slopscore hook pre-push "$@"
@@ -222,6 +224,11 @@ def pre_push(args: list[str]) -> int:
         else:
             rev_args = ["rev-list", f"{remote_sha}..{local_sha}"]
         for sha in _git(*rev_args).stdout.split():
+            # Defence-in-depth: only ever interpolate a real object id into the
+            # git calls below, so a future change can't let a dash-prefixed
+            # token reach git as an option (review, security Low).
+            if not _OBJECT_ID.fullmatch(sha):
+                continue
             scanned += 1
             msg = _git("log", "-1", "--format=%B", sha).stdout
             # First-parent diff so a merge scores what it introduced.

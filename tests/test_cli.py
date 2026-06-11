@@ -188,19 +188,6 @@ def test_use_color_modes(monkeypatch):
     assert _use_color("auto") is False
 
 
-def test_label_appears_in_report_header(tmp_path, capsys):
-    p = _write(tmp_path, "msg.txt", "Fix the parser")
-    main(["--text", str(p), "--label", "abc1234 Fix the parser"])
-    out = capsys.readouterr().out
-    assert "abc1234 Fix the parser" in out.splitlines()[0]
-
-
-def test_badge_overrides_the_header_wordmark(tmp_path, capsys):
-    p = _write(tmp_path, "msg.txt", "Fix the parser")
-    main(["--text", str(p), "--badge", "SLOPSCORE COMMIT CHECK"])
-    assert "SLOPSCORE COMMIT CHECK" in capsys.readouterr().out.splitlines()[0]
-
-
 def test_json_input_evidence_carries_field_and_line(tmp_path, capsys):
     pr = json.dumps(
         {

@@ -74,3 +74,50 @@ def test_other_tool_attributions_flag():
         "Co-authored-by: Windsurf <windsurf@codeium.com>",
     ):
         assert _report(Document(body=body)).verdict == "FLAG", body
+
+
+def test_bot_identity_and_form_markers_flag():
+    # D-14: the highest-volume real-world tells are bot identities/emails and
+    # trailer-key forms, not display-names. All must flag.
+    for body in (
+        "Fix the parser\n\nCo-authored-by: Claude <noreply@anthropic.com>",
+        "rework auth\n\nCo-authored-by: cursoragent <agent@cursor.com>",
+        "tidy up\n\nCo-authored-by: devin-ai-integration[bot] <devin@example.com>",
+        "Assisted-by: Claude",
+        "Generated-by: Copilot",
+    ):
+        assert _report(Document(body=body)).verdict == "FLAG", body
+
+
+def test_human_name_coauthors_do_not_flag():
+    # The inverse guard (D-14): a human pair-programmer whose name happens to
+    # match an agent's display-name must NOT be flagged.
+    for body in (
+        "Fix pagination\n\nCo-authored-by: Cody Banks <cody@example.com>",
+        "Refactor\n\nCo-authored-by: Roo Smith <roo@example.com>",
+        "Patch\n\nCo-authored-by: Pat Cline <pat@example.com>",
+    ):
+        assert _report(Document(body=body)).verdict == "PASS", body
+
+
+def test_tool_names_in_prose_do_not_flag():
+    # REGRESSION (review H2): bot-identity tokens must only count in a trailer,
+    # not when a human merely names the tool in prose or a diff. With the D-13
+    # HIGH floor these were confident false-accusations.
+    for body in (
+        "Add cursoragent integration tests",
+        "Fix copilot-swe-agent webhook parsing",
+        "Migrate CI off devin-ai-integration",
+        "Document the noreply@anthropic.com bounce handling",
+        "Bump the (aider) chat model",
+    ):
+        assert _report(Document(body=body)).verdict == "PASS", body
+
+
+def test_status_glyphs_count_as_emoji_tells():
+    # The real corpus shows humans do NOT use check/warning glyphs (0/372
+    # human, 0/24 holdout), so they stay as decorative-AI tells rather than
+    # being excluded. A review claimed humans use them; the data overruled it.
+    from slopscore.signals import _detect_emoji
+
+    assert _detect_emoji("shipped ✅ careful ⚠ ok ✔")[0] == 3

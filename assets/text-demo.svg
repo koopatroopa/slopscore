@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="284" font-family="ui-monospace, 'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="13px">
+<rect width="760" height="284" rx="8" fill="#0d1117"/>
+<rect x="19" y="28" width="177.1" height="20" fill="#5c0f0f"/>
+<rect x="16" y="10" width="177.1" height="20" fill="#b62324"/>
+<text x="16" y="24" fill="#ffffff" font-weight="bold" xml:space="preserve"> SLOPSCORE SLOP REPORT </text>
+<text x="16.0" y="70" fill="#c9d1d9" xml:space="preserve">Slop score </text>
+<text x="100.7" y="70" fill="#f85149" font-weight="bold" xml:space="preserve">75.0/100</text>
+<text x="162.3" y="70" fill="#c9d1d9" xml:space="preserve">  band </text>
+<text x="216.2" y="70" fill="#f85149" font-weight="bold" xml:space="preserve">HIGH</text>
+<text x="247.0" y="70" fill="#c9d1d9" xml:space="preserve">  verdict </text>
+<text x="324.0" y="70" fill="#f85149" font-weight="bold" xml:space="preserve">FLAG</text>
+<text x="354.8" y="70" fill="#c9d1d9" xml:space="preserve">  (raw 6.0, threshold 30.0)</text>
+<text x="16.0" y="110" fill="#c9d1d9" xml:space="preserve">Signals fired (3):</text>
+<text x="16.0" y="130" fill="#39c5cf" xml:space="preserve">  [+4.0] </text>
+<text x="85.3" y="130" fill="#c9d1d9" font-weight="bold" xml:space="preserve">ai_self_reference</text>
+<text x="216.2" y="130" fill="#c9d1d9" xml:space="preserve">  x1  Explicit AI attribution or assistant self-reference</text>
+<text x="16.0" y="150" fill="#6e7681" xml:space="preserve">         Evidence: Generated with Claude</text>
+<text x="16.0" y="170" fill="#39c5cf" xml:space="preserve">  [+1.0] </text>
+<text x="85.3" y="170" fill="#c9d1d9" font-weight="bold" xml:space="preserve">ai_cliche_phrases</text>
+<text x="216.2" y="170" fill="#c9d1d9" xml:space="preserve">  x1  Filler and transition phrases characteristic of LLM prose</text>
+<text x="16.0" y="190" fill="#6e7681" xml:space="preserve">         Evidence: delve into</text>
+<text x="16.0" y="210" fill="#39c5cf" xml:space="preserve">  [+1.0] </text>
+<text x="85.3" y="210" fill="#c9d1d9" font-weight="bold" xml:space="preserve">sycophantic_openers</text>
+<text x="231.6" y="210" fill="#c9d1d9" xml:space="preserve">  x1  Chatbot-style enthusiastic or deferential openers</text>
+<text x="16.0" y="230" fill="#6e7681" xml:space="preserve">         Evidence: Certainly!</text>
+<text x="16.0" y="270" fill="#c9d1d9" xml:space="preserve">Verdict: </text>
+<text x="85.3" y="270" fill="#f85149" font-weight="bold" xml:space="preserve">FLAG</text>
+<text x="116.1" y="270" fill="#c9d1d9" xml:space="preserve">  (score 75.0 &gt;= threshold 30.0)</text>
+</svg>

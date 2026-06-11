@@ -1,6 +1,6 @@
 #!/bin/sh
 # slopscore pre-push shim - the logic lives in `slopscore hook pre-push`.
-# Install: `slopscore install-hooks` (or tools/install-git-hook.sh from a
+# Install: `slopscore install-hooks` (writes this shim into .git/hooks; from a
 # checkout). Bypass any time with `git push --no-verify`.
 if command -v slopscore >/dev/null 2>&1; then
   exec slopscore hook pre-push "$@"

@@ -1,6 +1,6 @@
 #!/bin/sh
 # slopscore commit-msg shim - the logic lives in `slopscore hook commit-msg`.
-# Install: `slopscore install-hooks` (or tools/install-git-hook.sh from a
+# Install: `slopscore install-hooks` (writes this shim into .git/hooks; from a
 # checkout). Bypass any time with `git commit --no-verify`.
 if command -v slopscore >/dev/null 2>&1; then
   exec slopscore hook commit-msg "$1"

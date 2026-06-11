@@ -1,6 +1,9 @@
 # slopscore
 
 [![tests](https://github.com/koopatroopa/slopscore/actions/workflows/ci.yml/badge.svg)](https://github.com/koopatroopa/slopscore/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/slopscore)](https://pypi.org/project/slopscore/)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ### **_Catch the AI slop before it ships._**
 
@@ -41,25 +44,18 @@ outside contributors. Everything runs locally: no LLM, no network, no telemetry.
 
 ## Try it
 
+Scoring a commit on its way out - the message and the staged code, with each
+finding pinned to where it is:
+
+![slopscore scoring a commit: 70/100 HIGH](assets/sample-report.svg)
+
+Or score raw text from the command line:
+
 ```sh
 echo "Certainly! Let's delve into a robust refactor. Generated with Claude Code." | slopscore --text -
 ```
 
-```
-[ SLOPSCORE SLOP REPORT ]
-
-Slop score 75.0/100  band HIGH  verdict FLAG  (raw 6.0, threshold 30.0)
-
-Signals fired (3):
-  [+4.0] ai_self_reference  x1  Explicit AI attribution or assistant self-reference
-         Evidence: Generated with Claude
-  [+1.0] ai_cliche_phrases  x1  Filler and transition phrases characteristic of LLM prose
-         Evidence: delve into
-  [+1.0] sycophantic_openers  x1  Chatbot-style enthusiastic or deferential openers
-         Evidence: Certainly!
-
-Verdict: FLAG (score 75.0 >= threshold 30.0)
-```
+![slopscore scoring the line above: 75/100 HIGH](assets/text-demo.svg)
 
 Drop the "Generated with Claude Code." sentence and it falls to 25.0, PASS -
 single weak signals are normal writing; only convergence flags.
@@ -91,7 +87,7 @@ slopscore --files src/*.py --json
 **2. Git hooks - score every commit and push; block them when you say so.**
 
 ```sh
-slopscore install-hooks      # from a checkout: tools/install-git-hook.sh
+slopscore install-hooks
 ```
 
 Or via the [pre-commit](https://pre-commit.com) framework:
@@ -127,9 +123,14 @@ added lines, report-only until you flip the gate (exit `0` pass, `1` flag).
 It runs on every contributor, so it is a shared craft standard - keep it
 report-only on repos with outside contributors.
 
-GitHub:
+GitHub (run it under `pull_request`, not `pull_request_target` - slopscore
+only needs to read the diff, never repo write access or secrets):
 
 ```yaml
+on: pull_request
+permissions:
+  contents: read
+# ...
 - uses: actions/checkout@v4
   with: { fetch-depth: 0 }
 - uses: koopatroopa/slopscore@v0   # pin to a tag
@@ -202,9 +203,9 @@ git config slopscore.config slopscore.toml           # hooks, per repo
 ## Honest about its limits
 
 - Calibration is validated on real data: 372 human and 514 AI commits from
-  large OSS repos separate cleanly (humans below 20, AI at 50+, an empty gap
-  around the flag bar). The HIGH band is the sparser end - a bare attribution
-  trailer lands in MEDIUM, and only genuine convergence reaches HIGH.
+  large OSS repos separate cleanly (humans below 20, AI at 70+, an empty gap
+  around the flag bar). An explicit attribution trailer is a certain tell, so
+  it scores HIGH on its own; weak signals must converge to get there.
 - The import check resolves against your manifest; import-name vs package-name
   mismatches (`yaml` vs `PyYAML`) are only partly covered by an alias map -
   hence opt-in. `requirements.txt` `-r` includes are not followed.

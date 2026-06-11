@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="344" font-family="ui-monospace, 'SF Mono', 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="13px">
+<rect width="760" height="344" rx="8" fill="#0d1117"/>
+<rect x="19" y="28" width="177.1" height="20" fill="#5c0f0f"/>
+<rect x="16" y="10" width="177.1" height="20" fill="#b62324"/>
+<text x="16" y="24" fill="#ffffff" font-weight="bold" xml:space="preserve"> SLOPSCORE SLOP REPORT </text>
+<text x="16.0" y="70" fill="#c9d1d9" xml:space="preserve">Slop score </text>
+<text x="100.7" y="70" fill="#f85149" font-weight="bold" xml:space="preserve">100.0/100</text>
+<text x="170.0" y="70" fill="#c9d1d9" xml:space="preserve">  band </text>
+<text x="223.9" y="70" fill="#f85149" font-weight="bold" xml:space="preserve">HIGH</text>
+<text x="254.7" y="70" fill="#c9d1d9" xml:space="preserve">  verdict </text>
+<text x="331.7" y="70" fill="#f85149" font-weight="bold" xml:space="preserve">FLAG</text>
+<text x="362.5" y="70" fill="#c9d1d9" xml:space="preserve">  (raw 14.25, threshold 30.0)</text>
+<text x="16.0" y="110" fill="#c9d1d9" xml:space="preserve">Signals fired (9):</text>
+<text x="16.0" y="130" fill="#39c5cf" xml:space="preserve">  [+4.0] </text>
+<text x="85.3" y="130" fill="#c9d1d9" font-weight="bold" xml:space="preserve">ai_self_reference</text>
+<text x="216.2" y="130" fill="#c9d1d9" xml:space="preserve">  x6 (capped 1)</text>
+<text x="16.0" y="150" fill="#39c5cf" xml:space="preserve">  [+2.0] </text>
+<text x="85.3" y="150" fill="#c9d1d9" font-weight="bold" xml:space="preserve">ai_cliche_phrases</text>
+<text x="216.2" y="150" fill="#c9d1d9" xml:space="preserve">  x4 (capped 2)</text>
+<text x="16.0" y="170" fill="#39c5cf" xml:space="preserve">  [+2.0] </text>
+<text x="85.3" y="170" fill="#c9d1d9" font-weight="bold" xml:space="preserve">sycophantic_openers</text>
+<text x="231.6" y="170" fill="#c9d1d9" xml:space="preserve">  x7 (capped 2)</text>
+<text x="16.0" y="190" fill="#39c5cf" xml:space="preserve">  [+1.5] </text>
+<text x="85.3" y="190" fill="#c9d1d9" font-weight="bold" xml:space="preserve">promotional_adjectives</text>
+<text x="254.7" y="190" fill="#c9d1d9" xml:space="preserve">  x3</text>
+<text x="16.0" y="210" fill="#39c5cf" xml:space="preserve">  [+1.0] </text>
+<text x="85.3" y="210" fill="#c9d1d9" font-weight="bold" xml:space="preserve">negative_parallelism</text>
+<text x="239.3" y="210" fill="#c9d1d9" xml:space="preserve">  x1</text>
+<text x="16.0" y="230" fill="#39c5cf" xml:space="preserve">  [+1.0] </text>
+<text x="85.3" y="230" fill="#c9d1d9" font-weight="bold" xml:space="preserve">rhetorical_qa</text>
+<text x="185.4" y="230" fill="#c9d1d9" xml:space="preserve">  x1</text>
+<text x="16.0" y="250" fill="#39c5cf" xml:space="preserve">  [+1.0] </text>
+<text x="85.3" y="250" fill="#c9d1d9" font-weight="bold" xml:space="preserve">vague_authority</text>
+<text x="200.8" y="250" fill="#c9d1d9" xml:space="preserve">  x1</text>
+<text x="16.0" y="270" fill="#39c5cf" xml:space="preserve">  [+1.0] </text>
+<text x="85.3" y="270" fill="#c9d1d9" font-weight="bold" xml:space="preserve">emoji_density</text>
+<text x="185.4" y="270" fill="#c9d1d9" xml:space="preserve">  x1  Decorative emoji</text>
+<text x="16.0" y="290" fill="#39c5cf" xml:space="preserve">  [+0.75] </text>
+<text x="93.0" y="290" fill="#c9d1d9" font-weight="bold" xml:space="preserve">em_dash_density</text>
+<text x="208.5" y="290" fill="#c9d1d9" xml:space="preserve">  x1</text>
+<text x="16.0" y="330" fill="#c9d1d9" xml:space="preserve">Verdict: </text>
+<text x="85.3" y="330" fill="#f85149" font-weight="bold" xml:space="preserve">FLAG</text>
+<text x="116.1" y="330" fill="#c9d1d9" xml:space="preserve">  (score 100.0 &gt;= threshold 30.0)</text>
+</svg>

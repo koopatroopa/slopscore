@@ -15,7 +15,6 @@ import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 VENV_BIN = ROOT / ".venv" / "bin"
-INSTALLER = ROOT / "tools" / "install-git-hook.sh"
 # Prefer the project venv (dev: guarantees working-tree code); fall back to a
 # PATH install (CI: pip install . IS the working-tree code there).
 SLOPSCORE_BIN = (
@@ -80,7 +79,8 @@ def make_repo(tmp_path):
     git(repo, "add", "README", env=env)
     git(repo, "commit", "-q", "-m", "Seed", env=env)
     install = subprocess.run(
-        [str(INSTALLER)], cwd=repo, capture_output=True, text=True, env=env
+        [str(SLOPSCORE_BIN), "install-hooks"], cwd=repo,
+        capture_output=True, text=True, env=env,
     )
     assert install.returncode == 0, install.stderr
     return repo, env
@@ -212,30 +212,9 @@ class TestPrePushHook:
         assert push(repo, env).returncode == 0
 
 
-class TestInstaller:
-    def test_installs_both_hooks(self, tmp_path):
-        repo, env = make_repo(tmp_path)
-        for hook in ("commit-msg", "pre-push"):
-            installed = repo / ".git" / "hooks" / hook
-            assert installed.exists()
-            assert os.access(installed, os.X_OK)
-            assert "slopscore" in installed.read_text()
-
-    def test_skips_foreign_hook(self, tmp_path):
-        repo = tmp_path / "repo"
-        repo.mkdir()
-        env = hook_env(tmp_path)
-        git(repo, "init", "-q", env=env)
-        foreign = repo / ".git" / "hooks" / "pre-push"
-        foreign.parent.mkdir(parents=True, exist_ok=True)
-        foreign.write_text("#!/bin/sh\n# someone else's hook\n")
-        result = subprocess.run(
-            [str(INSTALLER)], cwd=repo, capture_output=True, text=True, env=env
-        )
-        assert result.returncode == 0
-        assert "Skipped pre-push" in result.stderr
-        assert foreign.read_text() == "#!/bin/sh\n# someone else's hook\n"
-        assert "slopscore" in (repo / ".git" / "hooks" / "commit-msg").read_text()
+# Installer internals (both hooks, foreign-hook refusal) are covered by
+# tests/test_githooks.py against install_hooks() directly; make_repo() above
+# exercises the install path end-to-end through the CLI for every hook test.
 
 
 def test_sloppy_fixture_score_within_assumed_window(tmp_path):

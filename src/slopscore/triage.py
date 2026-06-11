@@ -216,6 +216,11 @@ def triage(
     ceiling = max_possible(doc, enabled=enabled, weights=weights)
     score = round(100 * raw / ceiling, 1) if ceiling else 0.0
     score = max(0.0, min(100.0, score))  # clamp both ends (defends against odd weights)
+    # A certain signal (an explicit AI attribution trailer) is definitive, not a
+    # weak convergence signal: it floors the score into HIGH on its own (D-13).
+    fired = {h.name for h in hits}
+    if any(s.certain and s.name in fired for s in SIGNALS):
+        score = max(score, MED_MAX)
     band = band_for(score)
     verdict = "FLAG" if score >= threshold else "PASS"
     return TriageReport(

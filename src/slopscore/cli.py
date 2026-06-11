@@ -142,14 +142,6 @@ def _build_parser() -> argparse.ArgumentParser:
         version=f"slopscore {_version()}",
     )
     parser.add_argument(
-        "--label",
-        help="context shown in the report header (e.g. a commit hash and subject)",
-    )
-    parser.add_argument(
-        "--badge",
-        help="wordmark text in the report header (default: SLOPSCORE SLOP REPORT)",
-    )
-    parser.add_argument(
         "--color",
         choices=("auto", "always", "never"),
         default="auto",
@@ -267,11 +259,7 @@ def _main(argv: list[str] | None = None) -> int:
     if args.as_json:
         print(json.dumps(report.to_dict(), indent=2))
     else:
-        print(
-            report.to_text(
-                color=_use_color(args.color), label=args.label, badge=args.badge
-            )
-        )
+        print(report.to_text(color=_use_color(args.color)))
     return 1 if report.verdict == "FLAG" else 0
 
 

@@ -134,18 +134,18 @@ def test_score_is_clamped_to_0_100_against_hostile_weights():
     assert 0.0 <= r.score <= 100.0
 
 
-def test_single_attribution_signal_flags_under_any_enabled_set():
-    # Policy pin (changed DELIBERATELY for D-12, 2026-06-11): attribution is
-    # the keystone signal - raw 4.0 over the in-ceiling prose ceiling (8.0)
-    # is 50.0, MEDIUM/FLAG. Folklore signals are additive-only, so enabling
-    # them can no longer deflate this below threshold (the D-09 inversion,
-    # closed for good): the score is identical with every signal enabled.
+def test_certain_attribution_signal_floors_to_high():
+    # Policy pin (D-13, 2026-06-11): an explicit AI attribution trailer is a
+    # CERTAIN tell, not weak convergence, so it floors the score into HIGH on
+    # its own (raw 4.0 would be 50.0/MEDIUM; the certain floor lifts it to
+    # 70.0/HIGH). Folklore signals are additive-only, so the floor holds
+    # identically with every signal enabled.
     doc = Document(body="As an AI language model, I cannot run the tests.")
     r = triage(doc)
     assert {h.name for h in r.hits} == {"ai_self_reference"}
     assert r.raw == 4.0
-    assert (r.score, r.band, r.verdict) == (50.0, "MEDIUM", "FLAG")
-    assert triage(doc, enabled=frozenset(s.name for s in SIGNALS)).score == 50.0
+    assert (r.score, r.band, r.verdict) == (70.0, "HIGH", "FLAG")
+    assert triage(doc, enabled=frozenset(s.name for s in SIGNALS)).score >= 70.0
 
 
 def test_no_single_weak_signal_flags_alone():

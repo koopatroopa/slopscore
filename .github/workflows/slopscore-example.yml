@@ -2,7 +2,10 @@
 # on pull requests. Report-only by default; set fail-on-flag to gate the merge.
 name: slopscore
 on:
-  pull_request:
+  pull_request: # NOT pull_request_target - slopscore only needs to read the diff
+
+permissions:
+  contents: read # no write access or secrets required
 
 jobs:
   slop:

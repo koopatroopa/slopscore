@@ -16,7 +16,7 @@ else
   range="HEAD~1...HEAD"  # fallback for push events / shallow checkouts
 fi
 
-diff=$(git diff --diff-filter=ACM "$range" 2>/dev/null)
+diff=$(git diff --diff-filter=ACMR "$range" 2>/dev/null)
 if [ -z "$diff" ]; then
   echo "slopscore: no changes to scan."
   exit 0
