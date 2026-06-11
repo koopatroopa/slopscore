@@ -1,0 +1,40 @@
+name: "slopscore"
+description: "Score AI-residue / low-craft slop in a pull request's changed files (advisory by default)."
+branding:
+  icon: "alert-triangle"
+  color: "gray-dark"
+
+inputs:
+  threshold:
+    description: "0-100 slop score at/above which the verdict is FLAG."
+    required: false
+    default: "30"
+  config:
+    description: "Path to a slopscore TOML config (per-signal on/off, weights, threshold)."
+    required: false
+    default: ""
+  fail-on-flag:
+    description: "Fail the check when the score is at/above the threshold. Default false (report-only)."
+    required: false
+    default: "false"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+
+    - name: Install slopscore
+      shell: bash
+      run: pip install "${{ github.action_path }}"
+
+    - name: Scan changed files
+      shell: bash
+      env:
+        SLOP_THRESHOLD: ${{ inputs.threshold }}
+        SLOP_CONFIG: ${{ inputs.config }}
+        SLOP_FAIL: ${{ inputs.fail-on-flag }}
+        SLOP_BASE: ${{ github.event.pull_request.base.sha }}
+      run: bash "${{ github.action_path }}/tools/action-scan.sh"

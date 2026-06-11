@@ -1,0 +1,18 @@
+# Example workflow - copy into your own repo's .github/workflows/ to run slopscore
+# on pull requests. Report-only by default; set fail-on-flag to gate the merge.
+name: slopscore
+on:
+  pull_request:
+
+jobs:
+  slop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history so the base..HEAD diff resolves
+      # Pin to a tag.
+      - uses: koopatroopa/slopscore@v0
+        with:
+          threshold: "30"
+          fail-on-flag: "false"
