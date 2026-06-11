@@ -20,7 +20,7 @@ import sys
 
 from slopscore.config import default_config, load_config
 from slopscore.ingest import MAX_INPUT_CHARS, files_from_diff, files_from_paths
-from slopscore.signals import CodeFile, Document
+from slopscore.signals import SIGNALS, CodeFile, Document
 from slopscore.triage import DEFAULT_THRESHOLD, triage
 
 
@@ -113,6 +113,12 @@ def _build_parser() -> argparse.ArgumentParser:
         dest="as_json",
         action="store_true",
         help="emit a machine-readable JSON report",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="thorough tier: enable every signal, including the opt-in folklore "
+        "(higher recall, higher false-positive - read the score, do not gate on it)",
     )
     parser.add_argument(
         "--threshold",
@@ -249,17 +255,27 @@ def _main(argv: list[str] | None = None) -> int:
     else:
         doc = Document(files=files)
 
+    enabled = frozenset(s.name for s in SIGNALS) if args.strict else config.enabled
     report = triage(
         doc,
         threshold=threshold,
-        enabled=config.enabled,
+        enabled=enabled,
         weights=config.weights,
         root=args.root or ".",
     )
     if args.as_json:
         print(json.dumps(report.to_dict(), indent=2))
     else:
-        print(report.to_text(color=_use_color(args.color)))
+        use_color = _use_color(args.color)
+        print(report.to_text(color=use_color))
+        dim, reset = ("\x1b[2m", "\x1b[0m") if use_color else ("", "")
+        if args.strict:
+            print(f"{dim}Running thorough tier - every signal on (higher recall; "
+                  f"read the score, don't gate on it).{reset}")
+        else:
+            print(f"{dim}Running default tier. Use --strict to additionally flag "
+                  f"the opt-in signals (section scaffolding, marketing prose, "
+                  f"rhetorical questions, hallucinated imports...).{reset}")
     return 1 if report.verdict == "FLAG" else 0
 
 

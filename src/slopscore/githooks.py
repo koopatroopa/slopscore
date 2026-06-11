@@ -17,7 +17,7 @@ import sys
 
 from slopscore.config import Config, default_config, load_config
 from slopscore.ingest import MAX_INPUT_CHARS, files_from_diff
-from slopscore.signals import Document
+from slopscore.signals import SIGNALS, Document
 from slopscore.triage import triage
 
 _ZERO = "0" * 40
@@ -89,6 +89,7 @@ class _Settings:
                 file=sys.stderr,
             )
         self.threshold_raw = _git_config("slopscore.threshold")
+        self.strict = _git_config("slopscore.strict", "bool") == "true"
         self.config = default_config()
         self.broken: str | None = None  # error text when settings are unusable
         config_path = _git_config("slopscore.config", "path")
@@ -134,6 +135,13 @@ def _footer(settings: _Settings) -> None:
         b = d = c = r = ""
     thr = settings.threshold_display
     print()
+    if settings.strict:
+        print(f"{b}Running thorough tier{r}{d} - every signal on (higher recall; "
+              f"read the score, don't gate on it). Off:{r} {c}git config slopscore.strict false{r}")
+    else:
+        print(f"{b}Running default tier.{r}{d} Run{r} {c}git config slopscore.strict true{r}"
+              f"{d} to additionally flag the opt-in signals (section scaffolding, "
+              f"marketing prose, rhetorical questions, hallucinated imports...).{r}")
     if settings.block:
         print(f"{b}Blocking: ON{r}{d} - commits and pushes scoring {thr}+ are refused.{r}")
         print(f"{d}To turn off run:{r} {c}git config slopscore.block false{r}")
@@ -148,11 +156,12 @@ def _footer(settings: _Settings) -> None:
 
 def _score(msg: str, diff: str, settings: _Settings, label: str | None, badge: str):
     cfg: Config = settings.config
+    enabled = frozenset(s.name for s in SIGNALS) if settings.strict else cfg.enabled
     doc = Document(
         body=msg[:MAX_INPUT_CHARS], files=files_from_diff(diff[:MAX_INPUT_CHARS])
     )
     report = triage(
-        doc, threshold=settings.threshold, enabled=cfg.enabled, weights=cfg.weights
+        doc, threshold=settings.threshold, enabled=enabled, weights=cfg.weights
     )
     text = report.to_text(color=sys.stdout.isatty(), label=label, badge=badge)
     return report, text

@@ -3,15 +3,17 @@
 The raw score is the sum of each fired signal's capped contribution - the
 deliberate design is that no single weak signal can flag on its own, only
 convergence does. The headline number is that raw score normalised to 0-100
-against the most the enabled signals could contribute, then placed in a band:
+against the most the enabled signals could contribute - a GRADIENT of how much
+AI residue is present, not a yes/no - then placed in a band:
 
-    LOW     score < 30        likely clean
-    MEDIUM  30 <= score < 70   some slop residue worth a look
-    HIGH    score >= 70        heavy slop residue
+    LOW     score < 30        little to no residue
+    MEDIUM  30 <= score < 70   some residue worth a look
+    HIGH    score >= 70        heavy residue
 
-The band classifies; the verdict flags at/above a 0-100 threshold (the exit
-code and CI/git-hook gate key off the verdict). Self-facing by design: it
-scores text, it does not accuse an author.
+A low non-zero score is light texture, not an accusation. The band classifies;
+the VERDICT (the only gate - exit code, CI, git hook) flags at/above the
+threshold and is tuned so honest human work passes. Self-facing by design: it
+scores text, it never accuses an author.
 """
 
 from __future__ import annotations

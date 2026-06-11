@@ -295,3 +295,24 @@ class TestHookConfig:
         result = commit(repo, env, CLEAN_MSG)
         assert result.returncode == 0
         assert "does not exist" in result.stderr
+
+
+class TestStrictTier:
+    def test_strict_config_enables_opt_in_signals(self, tmp_path):
+        repo, env = make_repo(tmp_path)
+        git(repo, "config", "slopscore.strict", "true", env=env)
+        # rhetorical_qa is opt-in (off by default); under strict it fires and
+        # the footer advertises the tier.
+        (repo / "f.py").write_text("x = 1\n")
+        git(repo, "add", "f.py", env=env)
+        r = git(repo, "commit", "-m", "Why? Because the math changed.", env=env, check=False)
+        out = r.stdout + r.stderr
+        assert r.returncode == 0
+        assert "rhetorical_qa" in out
+        assert "Running thorough tier" in out
+
+    def test_default_tier_advertises_strict(self, tmp_path):
+        repo, env = make_repo(tmp_path)
+        result = commit(repo, env, CLEAN_MSG)
+        assert "Running default tier" in result.stdout + result.stderr
+        assert "git config slopscore.strict true" in result.stdout + result.stderr

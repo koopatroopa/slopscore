@@ -239,3 +239,50 @@ def test_bare_text_flag_on_a_terminal_also_greets(monkeypatch, capsys):
     monkeypatch.setattr(sys.stdin, "isatty", lambda: True)
     assert main(["--text"]) == 0
     assert "install-hooks" in capsys.readouterr().out
+
+
+def test_strict_enables_opt_in_signals(tmp_path, capsys):
+    # --strict turns on the thorough tier: a prose-folklore signal that is
+    # off by default (rhetorical_qa) fires under --strict.
+    p = _write(tmp_path, "t.txt", "Why? Because the math changed.")
+    main(["--text", str(p), "--json"])
+    default = json.loads(capsys.readouterr().out)
+    main(["--text", str(p), "--strict", "--json"])
+    strict = json.loads(capsys.readouterr().out)
+    assert "rhetorical_qa" not in {s["name"] for s in default["signals"]}
+    assert "rhetorical_qa" in {s["name"] for s in strict["signals"]}
+
+
+def test_default_run_prints_tier_hint(tmp_path, capsys):
+    # Text mode advertises the tier so --strict is discoverable.
+    p = _write(tmp_path, "t.txt", "Fix the parser")
+    main(["--text", str(p)])
+    out = capsys.readouterr().out
+    assert "Running default tier" in out
+    assert "--strict" in out
+
+
+def test_strict_run_prints_thorough_tier(tmp_path, capsys):
+    p = _write(tmp_path, "t.txt", "Fix the parser")
+    main(["--text", str(p), "--strict"])
+    assert "Running thorough tier" in capsys.readouterr().out
+
+
+def test_json_output_carries_no_tier_note(tmp_path, capsys):
+    # The tier note is human chrome - it must never land in --json output, or
+    # it would corrupt a machine consumer. True in both tiers.
+    p = _write(tmp_path, "t.txt", "Fix the parser")
+    for argv in (["--text", str(p), "--json"], ["--text", str(p), "--strict", "--json"]):
+        main(argv)
+        out = capsys.readouterr().out
+        assert "Running" not in out and "tier" not in out
+        json.loads(out)  # parses clean
+
+
+def test_strict_overrides_a_config_that_disables_signals(tmp_path, capsys):
+    # --strict forces every signal on, even one a --config turned off.
+    cfg = _write(tmp_path, "c.toml", "[signals]\nrhetorical_qa = false\n")
+    p = _write(tmp_path, "t.txt", "Why? Because the math changed.")
+    main(["--text", str(p), "--config", cfg, "--strict", "--json"])
+    data = json.loads(capsys.readouterr().out)
+    assert "rhetorical_qa" in {s["name"] for s in data["signals"]}

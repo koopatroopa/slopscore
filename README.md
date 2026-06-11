@@ -38,9 +38,27 @@ It flags **craft, not authorship**. slopscore never claims "this is AI" - it
 points at fixable leftovers with evidence, like a linter flagging a missing
 semicolon. (Style-based AI detection is unreliable and biased against
 second-language writers, so it refuses to do it: 24 real pre-2020 human PRs
-must score LOW forever - `tests/test_holdout.py`.) Run it on yourself via the
-hooks, or as a shared CI standard on every PR - report-only for repos with
-outside contributors. Everything runs locally: no LLM, no network, no telemetry.
+must score LOW forever - `tests/test_holdout.py`.) Everything runs locally: no
+LLM, no network, no telemetry.
+
+## Who runs it
+
+Two kinds of people, both on their **own** work:
+
+- **You used AI and want to ship clean.** Catch the residue - a leftover
+  trailer, a placeholder stub, unedited boilerplate - before a reviewer does.
+  Run it on yourself via the hooks, or as a shared standard in CI (report-only
+  for repos with outside contributors).
+- **You didn't use AI but fear a detector will say you did.** Formal and
+  second-language writers get wrongly flagged constantly. Turn on the thorough
+  tier (`--strict`) and slopscore shows your *own* writing through a crude
+  detector's eyes - the em-dashes, the "delve", the scaffolding those tools
+  latch onto - with evidence, so you can see your exposure and decide whether
+  to defang it. slopscore does not believe these prove AI; it refuses that. It
+  just lets you see what the flawed tools out there react to.
+
+Either way the score is *information*, never an accusation: the verdict is the
+only gate, and honest human work is built to pass.
 
 ## Try it
 
@@ -59,6 +77,10 @@ echo "Certainly! Let's delve into a robust refactor. Generated with Claude Code.
 
 Drop the "Generated with Claude Code." sentence and it falls to 25.0, PASS -
 single weak signals are normal writing; only convergence flags.
+
+The score is a **gradient** - *how much* AI residue is in the text, not a
+yes/no. A low non-zero score is light texture, not an accusation; the
+**verdict** is the only gate, and it is tuned so honest human work passes.
 
 - Bands: **LOW** below 30, **MEDIUM** 30 to under 70, **HIGH** 70 and up. The
   **verdict** FLAGs at/above the threshold (default 30), so MEDIUM and HIGH

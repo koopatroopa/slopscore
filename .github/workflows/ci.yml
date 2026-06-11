@@ -7,10 +7,16 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest]
         python-version: ["3.11", "3.12"]
+        # One macOS leg proves Apple compatibility (POSIX-sh hooks, stdlib
+        # engine) without the 10x private-repo minutes of a full cross-product.
+        include:
+          - os: macos-latest
+            python-version: "3.12"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
