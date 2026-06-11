@@ -3,7 +3,7 @@
 [![tests](https://github.com/koopatroopa/slopscore/actions/workflows/ci.yml/badge.svg)](https://github.com/koopatroopa/slopscore/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/slopscore)](https://pypi.org/project/slopscore/)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](https://github.com/koopatroopa/slopscore/blob/main/LICENSE)
 
 ### **_Catch the slop before it ships._**
 
@@ -86,7 +86,7 @@ signals that false-fired on real humans were rejected and stay rejected.
 Scoring a commit on its way out - the message and the staged code, with each
 finding pinned to where it is:
 
-![slopscore scoring a commit: 70/100 HIGH](assets/sample-report.svg)
+![slopscore scoring a commit: 70/100 HIGH](https://raw.githubusercontent.com/koopatroopa/slopscore/v0.1.0/assets/sample-report.svg)
 
 Or score raw text from the command line:
 
@@ -94,7 +94,7 @@ Or score raw text from the command line:
 echo "Certainly! Let's delve into a robust refactor. Generated with Claude Code." | slopscore --text -
 ```
 
-![slopscore scoring the line above: 86/100 HIGH](assets/text-demo.svg)
+![slopscore scoring the line above: 86/100 HIGH](https://raw.githubusercontent.com/koopatroopa/slopscore/v0.1.0/assets/text-demo.svg)
 
 Drop the "Generated with Claude Code." sentence and it falls to 13.6, PASS -
 single weak signals are normal writing; only convergence flags.
